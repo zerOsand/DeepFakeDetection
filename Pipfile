@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask-ml = "==0.2.5"
+numpy = "==2.2.2"
+onnxruntime-gpu = "==1.20.1"
+pillow = "==11.1.0"
+torch = "==2.5.1"
+torchvision = "==0.20.1"
+
+[dev-packages]
+
+[requires]
+python_version = "3.12"
