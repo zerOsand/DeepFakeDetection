@@ -74,6 +74,14 @@ python deepfake_cli.py --input_dir path/to/image_dir --output_dir path/to/output
 #### View the results
 ![RescueBox Desktop](images/view_results.png)
 
+#### Datasets
+Here are links to the datasets we considered:
+
+- [DDFD](https://cvlab.cse.msu.edu/dffd-dataset.html)
+- [DeepfakeMNIST](https://github.com/huangjiadidi/DeepFakeMnist)
+- [CIFAKE (Not humans)](https://www.kaggle.com/datasets/birdy654/cifake-real-and-ai-generated-synthetic-images)
+- [DeepFakeFace](https://github.com/OpenRL-Lab/DeepFakeFace)
+
 ### Attribution
 The deepfake model project was done by students in the Fall 24 offering of 596E. Their work has been modified to work with ONNX models here. Their repo can be found [here](https://github.com/aravadikesh/DeepFakeDetector/).
 
