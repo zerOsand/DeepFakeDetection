@@ -1,0 +1,3 @@
+image_path,prediction,confidence
+DeepFakeDetection/sample_input/fake/obama.png,real,0.9987987279891968
+GitHub/DeepFakeDetection/sample_input/fake/zuckerberg.png,real,0.9843608736991882
