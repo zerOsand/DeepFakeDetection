@@ -5,6 +5,7 @@ __pycache__/
 
 *.zip
 Datasets/
+CS564/
 
 # C extensions
 *.so
