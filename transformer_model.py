@@ -28,13 +28,17 @@ def postprocess(prediction_results):
     # Return a list of tuples with image path and prediction
     processed_results = []
     for result in prediction_results:
-        #check which label has the highest score
-        prediction = max(result, key=lambda x: x['score'])
-        image_path = prediction.pop('image_path', None)  # Remove image path from the result
+        print('r', result)
+        # Check which label has the highest score
+        # -- Model automatically has max_score = result[0] 
+        # -- If we notice that later a score below 50% is classified as the 'prediction'
+        #   replace the below code with this:
+        # prediction = result[0] if max(result[0]['score'], result[1]['score']) else result[1]
+        prediction = result[0]
         # Add image path back to the prediction
-        prediction['image_path'] = image_path
+        prediction['image_path'] = result[2]
         # Add the processed result to the list
-        processed_results.append((image_path, prediction))
+        processed_results.append(prediction)
     return processed_results
 
 
