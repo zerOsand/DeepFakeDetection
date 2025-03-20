@@ -35,6 +35,7 @@ def get_area_ratio(img1, img2):
 
 #Inputs: models (list of model objects), dataset (dataset object)
 def run_models(models, dataset):
+    return
 
 
 if __name__ == "__main__":
