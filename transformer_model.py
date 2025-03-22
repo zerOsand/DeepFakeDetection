@@ -1,54 +1,61 @@
 from transformers import pipeline
+import os
 
-# Load the model
-pipe = pipeline(
-    "image-classification", model="prithivMLmods/Deep-Fake-Detector-Model", device=0
-)
-
-
-def get_images_from_folder(folder_path):
-    import os
-
-    images = []
-    for filename in os.listdir(folder_path):
-        if filename.endswith(".jpg") or filename.endswith(".png"):
-            images.append(os.path.join(folder_path, filename))
-    return images
-
-
-def predict(images):
-    results = []
-    for image in images:
-        result = pipe(
-            image
-        )  # List of dictionaries in the form [{'label': 'Fake', 'score': 0.9999}, {'label': 'Real', 'score': 0.0001}]
-        # add the image path to the last element of the list
-        result.append(image)
-        results.append(result)
-    return results
-
-
-def preprocess(anything):
-    # Placeholder for preprocessing logic
-    return anything
-
-
-def postprocess(prediction_results):
-    # Return a list of tuples with image path and prediction
-    processed_results = []
-    for result in prediction_results:
-        print("r", result)
+class DeepFakeDetectorTransformer:
+    def __init__(self, model_name="prithivMLmods/Deep-Fake-Detector-Model", device=0):
+        # Load the model
+        self.pipe = pipeline("image-classification", model=model_name, device=device)
+    
+    def get_images_from_folder(self, folder_path):
+        images = []
+        for filename in os.listdir(folder_path):
+            if filename.endswith(".jpg") or filename.endswith(".png"):
+                images.append(os.path.join(folder_path, filename))
+        return images
+    
+    def predict(self, image):
+        # Get the prediction
+        results = self.pipe(image)
+        # Return the results
+        return results
+    
+    def predict_images(self, images):
+        # Get the predictions for all images
+        results = self.pipe(images)
+        # Return the results
+        return results
+    
+    def preprocess(self, image):
+        # We don't preprocess anything for this model
+        return image
+    
+    def preprocess_images(self, images):
+        # We don't preprocess anything for this model
+        return images
+    
+    def postprocess(self, prediction_result):
+        # Process a single prediction result
+        #print("r", prediction_result)
         # Check which label has the highest score
-        # -- Model automatically has max_score = result[0]
+        # -- Model automatically has max_score = prediction_result[0]
         # -- If we notice that later a score below 50% is classified as the 'prediction'
         #   replace the below code with this:
-        # prediction = result[0] if max(result[0]['score'], result[1]['score']) else result[1]
-        prediction = result[0]
-        # Add image path back to the prediction
-        prediction["image_path"] = result[2]
-        # Add the processed result to the list
-        processed_results.append(prediction)
-    return processed_results
+        # prediction = prediction_result[0] if max(prediction_result[0]['score'], prediction_result[1]['score']) else prediction_result[1]
+        prediction = prediction_result[0]
+        
+        # Return the processed result
+        return prediction
+    
+    def postprocess_images(self, prediction_results):
+        # Process all prediction results
+        processed_results = []
+        for result in prediction_results:
+            processed_result = self.postprocess(result)
+            processed_results.append(processed_result)
+        return processed_results
 
-
-# source CS564/bin/activate
+# Example usage:
+# detector = DeepFakeDetector()
+# images = detector.get_images_from_folder("/path/to/images")
+# results = detector.predict(images)
+# processed_results = detector.postprocess(results)

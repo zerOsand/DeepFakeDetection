@@ -1,17 +1,13 @@
 import argparse
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 # from BNN github
 # import model as model
 # import numpy as np
-import torch
-import tqdm
-# from retinaface import RetinaFace
-from torchmetrics.functional.classification import (accuracy, confusion_matrix,
-                                                    f1_score)
 
 from sim_data import defaultDataset
 
+from transformer_model import DeepFakeDetectorTransformer
 
 def args_func():
     parser = argparse.ArgumentParser()
@@ -34,8 +30,36 @@ def get_area_ratio(img1, img2):
 
 
 #Inputs: models (list of model objects), dataset (dataset object)
+#Outputs: results (a list of lists of dictionaries, one for each model)
 def run_models(models, dataset):
-    return
+    results = []
+    for model in models:
+        model_results = []
+        model_results.append({"model_name": model.__class__.__name__})
+        for i in range(len(dataset)): #This is done one image at a time to avoid memory issues
+            sample = dataset[i]
+            image = sample["image"]
+            image_path = sample["image_path"]
+            original_res = sample["original_res"]
+
+            # Preprocess the image
+            preprocessed_image = model.preprocess(image)
+
+            # Get the prediction
+            prediction = model.predict(preprocessed_image)
+
+            # Postprocess the prediction
+            processed_prediction = model.postprocess(prediction)
+
+            #Add the name of the image to the prediction
+            processed_prediction["image_path"] = image_path
+
+            # Append the result to the list
+            model_results.append(processed_prediction)
+
+        results.append(model_results)
+
+    return results
 
 
 if __name__ == "__main__":
@@ -45,21 +69,14 @@ if __name__ == "__main__":
     input = "sample_input/real"
 
     args = args_func()
-    input = args.dataset_path
+    #input = args.dataset_path
 
     test_dataset = defaultDataset(
         dataset_path=input, resolution=224
     )
 
-    
+    models_to_use = [DeepFakeDetectorTransformer()]
 
-    preds = torch.stack(logits)
-    target = torch.stack(label)
-    acc = accuracy(preds, target, task="binary", average="micro", threshold=0.5)
-    f1 = f1_score(preds, target, task="binary", threshold=0.5, average="micro")
-    cm = confusion_matrix(preds, target, task="binary", threshold=0.5)
-    print(f"F1: {f1}")
-    print(f"Accuracy: {acc}")
-    print(cm)
-    print(f"Uncertain images: {uncertain_imgs}")
-    print(f"Error images: {err_imgs}")
+    results = run_models(models_to_use, test_dataset)
+
+    print(results)
