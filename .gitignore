@@ -174,4 +174,4 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 .DS_Store
-deepfake_image_model.onnx
+*.onnx
