@@ -6,7 +6,7 @@ import onnxruntime as ort
 import numpy as np
 
 
-class BNextModel:
+class BNextModelONNX:
     def __init__(self, model_path, resolution=224):
         self.session = ort.InferenceSession(
             model_path,
