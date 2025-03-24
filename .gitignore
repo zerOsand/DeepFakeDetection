@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+*.zip
+Datasets/
+CS564/
+
 # C extensions
 *.so
 
@@ -170,4 +174,4 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 .DS_Store
-deepfake_image_model.onnx
+*.onnx
