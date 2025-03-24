@@ -7,8 +7,8 @@ import argparse
 
 from sim_data import defaultDataset
 
-from transformer_model import DeepFakeDetectorTransformer
-from onnx_helper import DeepFakeModel
+from process.transformer_process import TransformerModel
+from process.bnext_process import BNextModel
 
 
 def args_func():
@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
     test_dataset = defaultDataset(dataset_path=input, resolution=224)
 
-    models_to_use = [DeepFakeModel("onnx_models/deepfake_image_model.onnx")]
+    models_to_use = [BNextModel("onnx_models/bnext_model.onnx"), TransformerModel()]
 
     results = run_models(models_to_use, test_dataset)
 

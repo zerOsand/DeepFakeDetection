@@ -6,7 +6,7 @@ import onnxruntime as ort
 import numpy as np
 
 
-class DeepFakeModel:
+class BNextModel:
     def __init__(self, model_path, resolution=224):
         self.session = ort.InferenceSession(
             model_path,
@@ -38,7 +38,6 @@ class DeepFakeModel:
         return {"prediction": pred, "confidence": conf.item()}
 
     def postprocess(self, output):
-        print(output)
         return self.decode_prediction(torch.sigmoid(torch.tensor(output[0][0].item())))
 
     def predict(self, input):

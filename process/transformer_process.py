@@ -2,7 +2,7 @@ from transformers import pipeline
 import os
 
 
-class DeepFakeDetectorTransformer:
+class TransformerModel:
     def __init__(self, model_name="prithivMLmods/Deep-Fake-Detector-Model", device=0):
         # Load the model
         self.pipe = pipeline("image-classification", model=model_name, device=device)
