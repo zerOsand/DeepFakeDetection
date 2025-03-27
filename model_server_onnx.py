@@ -16,6 +16,7 @@ from process.bnext_process import BNextModelONNX
 from process.transformer_process import TransformerModel
 import torch
 
+import os
 from sim_data import defaultDataset
 
 warnings.filterwarnings("ignore")
@@ -120,7 +121,7 @@ def give_prediction(inputs: Inputs, parameters: Parameters) -> ResponseBody:
     # Add prediction rows grouped by path
     for i in range(len(model_data[0]["predictions"])):
         # Path row
-        paths = [m["predictions"][i]["image_path"] for m in model_data]
+        paths = [os.path.basename(m["predictions"][i]["image_path"]) for m in model_data]
 
         # Prediction row
         preds = [m["predictions"][i]["prediction"] for m in model_data]
