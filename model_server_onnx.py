@@ -12,8 +12,11 @@ from flask_ml.flask_ml_server.models import (
     ResponseBody,
     TaskSchema,
 )
-from onnx_helper import DeepFakeModel
+from process.bnext_process import BNextModelONNX
+from process.transformer_process import TransformerModel
 import torch
+
+from sim_data import defaultDataset
 
 warnings.filterwarnings("ignore")
 
@@ -53,24 +56,90 @@ server.add_app_metadata(
     info=load_file_as_string("img-app-info.md"),
 )
 
-model = DeepFakeModel("deepfake_image_model.onnx")
+models = [BNextModelONNX("onnx_models/bnext_model.onnx"), TransformerModel()]
+# model = DeepFakeModel("deepfake_image_model.onnx")
 
+def run_models(models, dataset):
+    results = []
+    for model in models:
+        model_results = []
+        model_results.append({"model_name": model.__class__.__name__})
+        for i in range(
+            len(dataset)
+        ):  # This is done one image at a time to avoid memory issues
+            sample = dataset[i]
+            image = sample["image"]
+            image_path = sample["image_path"]
+            original_res = sample["original_res"]
+
+            # Preprocess the image
+            preprocessed_image = model.preprocess(image)
+
+            # Get the prediction
+            prediction = model.predict(preprocessed_image)
+
+            # Postprocess the prediction
+            processed_prediction = model.postprocess(prediction)
+
+            # Add the name of the image to the prediction
+            processed_prediction["image_path"] = image_path
+
+            # Append the result to the list
+            model_results.append(processed_prediction)
+
+        results.append(model_results)
+
+    return results
 
 @server.route("/predict", task_schema_func=create_transform_case_task_schema)
 def give_prediction(inputs: Inputs, parameters: Parameters) -> ResponseBody:
     input_path = inputs["input_dataset"].path
     out = Path(inputs["output_file"].path)
     out = str(out / (f"predictions_" + str(int(torch.rand(1) * 1000)) + ".csv"))
-    print(parameters)
-    res_list = model.predict_dir(input_path)
-    with open(out, mode="w", newline="") as file:
-        writer = csv.DictWriter(
-            file, fieldnames=["image_path", "prediction", "confidence"]
-        )
-        writer.writeheader()  # Write header row
-        writer.writerows(res_list)  # Write data rows
 
-    return ResponseBody(FileResponse(path=out, file_type="csv"))
+    dataset = defaultDataset(dataset_path=input_path, resolution=224)
+
+    # print(parameters)
+    res_list = run_models(models, dataset)
+    # print(res_list)
+    # Prepare model data structure
+    model_data = []
+    for model_results in res_list:
+        model_name = model_results[0]["model_name"]
+        predictions = model_results[1:]
+        model_data.append({
+            "name": model_name,
+            "predictions": predictions
+        })
+    
+    # Build CSV content
+    csv_rows = []
+    # Add model names header
+    csv_rows.append(["Model:"] + [m["name"] for m in model_data])
+    
+    # Add prediction rows grouped by path
+    for i in range(len(model_data[0]["predictions"])):
+        # Path row
+        paths = [m["predictions"][i]["image_path"] for m in model_data]
+
+        # Prediction row
+        preds = [m["predictions"][i]["prediction"] for m in model_data]
+        
+        # Confidence row (as percentages)
+        confidences = [f"{m['predictions'][i]['confidence'] * 100:.0f}%" 
+                      for m in model_data]
+
+        # Add the rows
+        csv_rows.append(["Path:"] + paths)
+        csv_rows.append(["Prediction:"] + preds)
+        csv_rows.append(["Confidence:"] + confidences)
+    
+    # Write to CSV
+    with open(out, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerows(csv_rows)
+    
+    return ResponseBody(FileResponse(path=str(out), file_type="csv"))
 
 
 if __name__ == "__main__":

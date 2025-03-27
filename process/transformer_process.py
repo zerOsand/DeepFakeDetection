@@ -43,6 +43,8 @@ class TransformerModel:
         #   replace the below code with this:
         # prediction = prediction_result[0] if max(prediction_result[0]['score'], prediction_result[1]['score']) else prediction_result[1]
         prediction = prediction_result[0]
+        prediction['prediction'] = prediction.pop('label')
+        prediction['confidence'] = prediction.pop('score')
 
         # Return the processed result
         return prediction
