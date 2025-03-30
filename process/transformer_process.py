@@ -5,7 +5,21 @@ import os
 class TransformerModel:
     def __init__(self, model_name="prithivMLmods/Deep-Fake-Detector-Model", device=0):
         # Load the model
+        # import torch
+        # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.pipe = pipeline("image-classification", model=model_name, device=device)
+        underlying_model = self.pipe.model
+        # import torch.onnx
+        # torch.onnx.export(
+        #     underlying_model,
+        #     torch.randn(1, 3, 224, 224),
+        #     "model.onnx",
+        #     export_params=True,
+        #     opset_version=18,
+        #     do_constant_folding=True,
+        #     input_names=["input"],
+        #     output_names=["output"],
+        # )
 
     def get_images_from_folder(self, folder_path):
         images = []
@@ -56,8 +70,14 @@ class TransformerModel:
         return processed_results
 
 
-# Example usage:
-# detector = DeepFakeDetector()
-# images = detector.get_images_from_folder("/path/to/images")
-# results = detector.predict(images)
-# processed_results = detector.postprocess(results)
+# detector = TransformerModel()
+# images = "sample_input/real"
+# images = detector.get_images_from_folder(images)
+# #resize images to 224x224
+# from PIL import Image
+# for i in range(len(images)):
+#     images[i] = Image.open(images[i]).resize((224, 224))
+# predictions = detector.predict_images(images)
+# postprocessed_results = detector.postprocess_images(predictions)
+# for result in postprocessed_results:
+#     print(result)
