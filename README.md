@@ -5,7 +5,7 @@ This example uses a deep fake model that was originally created by students in t
 
 ## Steps to download exported ONNX model
 1. Download the ONNX models [here](https://drive.google.com/drive/u/5/folders/14UJap0G5YkdQoXCbjclhrv5gxswtuDit).
-2. Create a directory named `onnx_models` and place the downloaded ONNX models into into it.
+2. In the root, create a directory named `onnx_models` and place the downloaded ONNX models into into it.
 3. To test if it works, follow the steps for either running the Flask-ML server or the CLI. If there are any problems with Numpy, for example, `RuntimeError: Numpy is not available`, consider downgrading to a 1.X version of Numpy with the following commands:
 
 ```bash
