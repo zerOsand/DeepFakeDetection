@@ -76,19 +76,16 @@ def run_models(models, dataset):
 
 
 if __name__ == "__main__":
-    available_models = {
-        cls.__name__: cls
-        for cls in [TransformerModel, BNextModelONNX]
-    }
-    
+    available_models = {cls.__name__: cls for cls in [TransformerModel, BNextModelONNX]}
+
     input_path = "sample_input/real"
 
     args = args_func()
     input_path = args.dataset_path
-    #Check if the input is a valid path
+    # Check if the input is a valid path
     if not os.path.exists(input_path):
         raise ValueError(f"Invalid path: {input_path}")
-    
+
     models_to_use = []
     for model in args.models:
         if model == "all":
@@ -103,10 +100,12 @@ if __name__ == "__main__":
         elif model in available_models:
             models_to_use.append(available_models[model]())
         else:
-            #print that model: model is not available
+            # print that model: model is not available
             print(f"Model: {model} is not available")
     if len(models_to_use) == 0:
-        raise ValueError("No valid models were selected. Please select at least one model, use 'list' to see available models, or 'all' to use all models.")
+        raise ValueError(
+            "No valid models were selected. Please select at least one model, use 'list' to see available models, or 'all' to use all models."
+        )
     else:
         print("Using models:")
         for model in models_to_use:
@@ -119,7 +118,7 @@ if __name__ == "__main__":
         if proceed != "y":
             print("Exiting...")
             exit()
-    
+
     test_dataset = defaultDataset(dataset_path=input_path, resolution=224)
 
     results = run_models(models_to_use, test_dataset)
