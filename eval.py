@@ -44,7 +44,7 @@ def get_area_ratio(img1, img2):
 def run_models(models, dataset):
     results = []
     for model in models:
-        print(f"Running model: {model.__name__}")
+        print(f"Running model: {model.__class__.__name__}")
         model_results = []
         model_results.append({"model_name": model.__class__.__name__})
         for i in range(
@@ -114,11 +114,11 @@ if __name__ == "__main__":
         print("--" * 20)
         print("Using dataset:", input)
         print("--" * 20)
-        print("Proceed? (y/n)")
-        proceed = input().strip().lower()
-        if proceed != "y":
-            print("Exiting...")
-            exit()
+        # print("Proceed? (y/n)")
+        # proceed = input().strip().lower()
+        # if proceed != "y":
+        #     print("Exiting...")
+        #     exit()
     
     test_dataset = defaultDataset(dataset_path=input, resolution=224)
 
