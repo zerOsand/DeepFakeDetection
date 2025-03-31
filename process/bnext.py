@@ -1,10 +1,8 @@
 import torchvision.transforms.v2 as T
 from PIL import Image
 import torch
-import os
 import onnxruntime as ort
 import numpy as np
-
 
 class BNextModelONNX:
     def __init__(self, model_path="onnx_models/bnext_model.onnx", resolution=224):
@@ -23,7 +21,8 @@ class BNextModelONNX:
                     interpolation=T.InterpolationMode.BILINEAR,
                 ),
                 T.CenterCrop(self.resolution),
-                T.ToTensor(),
+                T.ToImage(),
+                T.ToDtype(torch.float32, scale = True),
             ]
         )(image)[
             None,
@@ -42,4 +41,5 @@ class BNextModelONNX:
 
     def predict(self, input):
         output = self.session.run(None, {"input": input})
+        print(output)
         return output[0]
