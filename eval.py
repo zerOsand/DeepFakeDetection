@@ -9,6 +9,7 @@ from sim_data import defaultDataset
 
 from process.transformer_process import TransformerModel
 from process.bnext_process import BNextModelONNX
+import os
 
 
 def args_func():
@@ -16,10 +17,17 @@ def args_func():
     parser.add_argument(
         "--dataset_path",
         type=str,
-        default="datasets/test",
-        help="Path to the dataset folder.",
+        required=True,
+        help="Path to the dataset folder that contains the test images. The root directory is where this file is located.",
     )
-    # TODO add arguments for models to use
+    parser.add_argument(
+        "--models",
+        type=str,
+        nargs="+",  # Accepts one or more model names as a list
+        required=True,
+        help="List of models to use (e.g., TransformerModel BNextModelONNX). Use 'all' to run all models or 'list' to list available models.",
+    )
+
     args = parser.parse_args()
     return args
 
@@ -36,6 +44,7 @@ def get_area_ratio(img1, img2):
 def run_models(models, dataset):
     results = []
     for model in models:
+        print(f"Running model: {model.__class__.__name__}")
         model_results = []
         model_results.append({"model_name": model.__class__.__name__})
         for i in range(
@@ -67,17 +76,50 @@ def run_models(models, dataset):
 
 
 if __name__ == "__main__":
+    available_models = {cls.__name__: cls for cls in [TransformerModel, BNextModelONNX]}
 
-    # print(torch.cuda.is_available())
-    # exit()
-    input = "sample_input/real"
+    input_path = "sample_input/real"
 
     args = args_func()
-    # input = args.dataset_path
+    input_path = args.dataset_path
+    # Check if the input is a valid path
+    if not os.path.exists(input_path):
+        raise ValueError(f"Invalid path: {input_path}")
 
-    test_dataset = defaultDataset(dataset_path=input, resolution=224)
+    models_to_use = []
+    for model in args.models:
+        if model == "all":
+            models_to_use = [cls() for cls in available_models.values()]
+            print("Using all models")
+            break
+        elif model == "list":
+            print("Available models:")
+            for model_name in available_models.keys():
+                print(model_name)
+            exit()
+        elif model in available_models:
+            models_to_use.append(available_models[model]())
+        else:
+            # print that model: model is not available
+            print(f"Model: {model} is not available")
+    if len(models_to_use) == 0:
+        raise ValueError(
+            "No valid models were selected. Please select at least one model, use 'list' to see available models, or 'all' to use all models."
+        )
+    else:
+        print("Using models:")
+        for model in models_to_use:
+            print(model.__class__.__name__)
+        print("--" * 20)
+        print("Using dataset:", input_path)
+        print("--" * 20)
+        print("Proceed? (y/n)")
+        proceed = input().strip().lower()
+        if proceed != "y":
+            print("Exiting...")
+            exit()
 
-    models_to_use = [BNextModelONNX("onnx_models/bnext_model.onnx"), TransformerModel()]
+    test_dataset = defaultDataset(dataset_path=input_path, resolution=224)
 
     results = run_models(models_to_use, test_dataset)
 

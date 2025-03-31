@@ -6,6 +6,8 @@ __pycache__/
 *.zip
 Datasets/
 CS564/
+onnx_models/*
+!onnx_models/.gitkeep
 
 # C extensions
 *.so
