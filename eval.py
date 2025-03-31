@@ -81,13 +81,13 @@ if __name__ == "__main__":
         for cls in [TransformerModel, BNextModelONNX]
     }
     
-    input = "sample_input/real"
+    input_path = "sample_input/real"
 
     args = args_func()
-    input = args.dataset_path
+    input_path = args.dataset_path
     #Check if the input is a valid path
-    if not os.path.exists(input):
-        raise ValueError(f"Invalid path: {input}")
+    if not os.path.exists(input_path):
+        raise ValueError(f"Invalid path: {input_path}")
     
     models_to_use = []
     for model in args.models:
@@ -112,15 +112,15 @@ if __name__ == "__main__":
         for model in models_to_use:
             print(model.__class__.__name__)
         print("--" * 20)
-        print("Using dataset:", input)
+        print("Using dataset:", input_path)
         print("--" * 20)
-        # print("Proceed? (y/n)")
-        # proceed = input().strip().lower()
-        # if proceed != "y":
-        #     print("Exiting...")
-        #     exit()
+        print("Proceed? (y/n)")
+        proceed = input().strip().lower()
+        if proceed != "y":
+            print("Exiting...")
+            exit()
     
-    test_dataset = defaultDataset(dataset_path=input, resolution=224)
+    test_dataset = defaultDataset(dataset_path=input_path, resolution=224)
 
     results = run_models(models_to_use, test_dataset)
 
