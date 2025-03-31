@@ -9,6 +9,7 @@ from sim_data import defaultDataset
 
 from process.transformer_process import TransformerModel
 from process.bnext_process import BNextModelONNX
+from process.transformer_onnx_process import TransformerModelONNX
 import os
 
 
@@ -76,8 +77,11 @@ def run_models(models, dataset):
 
 
 if __name__ == "__main__":
-    available_models = {cls.__name__: cls for cls in [TransformerModel, BNextModelONNX]}
-
+    available_models = {
+        cls.__name__: cls
+        for cls in [TransformerModel, BNextModelONNX, TransformerModelONNX]
+    }
+    
     input_path = "sample_input/real"
 
     args = args_func()

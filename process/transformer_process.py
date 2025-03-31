@@ -8,7 +8,7 @@ class TransformerModel:
         # import torch
         # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.pipe = pipeline("image-classification", model=model_name, device=device)
-        underlying_model = self.pipe.model
+        #underlying_model = self.pipe.model
         # import torch.onnx
         # torch.onnx.export(
         #     underlying_model,
@@ -56,6 +56,7 @@ class TransformerModel:
         # -- If we notice that later a score below 50% is classified as the 'prediction'
         #   replace the below code with this:
         # prediction = prediction_result[0] if max(prediction_result[0]['score'], prediction_result[1]['score']) else prediction_result[1]
+        #print(prediction_result)
         prediction = prediction_result[0]
         prediction["prediction"] = prediction.pop("label")
         prediction["confidence"] = prediction.pop("score")
