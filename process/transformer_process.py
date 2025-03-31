@@ -57,6 +57,8 @@ class TransformerModel:
         #   replace the below code with this:
         # prediction = prediction_result[0] if max(prediction_result[0]['score'], prediction_result[1]['score']) else prediction_result[1]
         prediction = prediction_result[0]
+        prediction["prediction"] = prediction.pop("label")
+        prediction["confidence"] = prediction.pop("score")
 
         # Return the processed result
         return prediction
@@ -68,16 +70,3 @@ class TransformerModel:
             processed_result = self.postprocess(result)
             processed_results.append(processed_result)
         return processed_results
-
-
-# detector = TransformerModel()
-# images = "sample_input/real"
-# images = detector.get_images_from_folder(images)
-# #resize images to 224x224
-# from PIL import Image
-# for i in range(len(images)):
-#     images[i] = Image.open(images[i]).resize((224, 224))
-# predictions = detector.predict_images(images)
-# postprocessed_results = detector.postprocess_images(predictions)
-# for result in postprocessed_results:
-#     print(result)

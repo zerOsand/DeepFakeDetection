@@ -1,0 +1,9 @@
+,Image,BNextModelONNX,TransformerModel
+Prediction:,ana.pngR,uncertain,Real
+Confidence:,,61%,73%
+Prediction:,tory.jpgR,real,Fake
+Confidence:,,96%,53%
+Prediction:,arteezy.pngR,real,Real
+Confidence:,,100%,69%
+Prediction:,dendi.jpgR,uncertain,Real
+Confidence:,,56%,62%
