@@ -1,13 +1,11 @@
-- ToDo: Instructions to add `onnx_models` directory and insert all ONNX models 
-
 # DeepFake Image Classifier ONNX model
 This repo demonstrates an example of how to run ONNX models. This example is aimed to help guide students in the first assignment in the Spring offering of 596E. Further improves can be made, especially when it comes to removing unnecessary dependencies (but this isn't a requirement in the first assignment).
 
 This example uses a deep fake model that was originally created by students in the Fall 2024 offering of 596E. The model has been modified to work with ONNX models. The model is used to classify images as either real or fake.
 
 ## Steps to download exported ONNX model
-1. Download the ONNX model [here](https://drive.google.com/drive/folders/1tqsA4G9C9eBdkrFxx1QFHS38NCMVlCnI?usp=drive_link).
-2. Place the downloaded deepfake_image_model.onnx file into the root directory.
+1. Download the ONNX models [here](https://drive.google.com/drive/u/5/folders/14UJap0G5YkdQoXCbjclhrv5gxswtuDit).
+2. Create a directory named `onnx_models` and place the downloaded ONNX models into into it.
 3. To test if it works, follow the steps for either running the Flask-ML server or the CLI. If there are any problems with Numpy, for example, `RuntimeError: Numpy is not available`, consider downgrading to a 1.X version of Numpy with the following commands:
 
 ```bash
@@ -61,7 +59,12 @@ The command line interface can be used to test the model. Run the following comm
 
 ```bash
 # image_dir is the directory containing the images
-python deepfake_cli.py --input_dir path/to/image_dir --output_dir path/to/output_dir
+python eval.py --dataset_path path/to/image_dir --models all
+```
+
+Run the following command to get more information:
+```bash
+python eval.py -h
 ```
 
 ### Download and run RescueBox Desktop from the following link: [Rescue Box Desktop](https://github.com/UMass-Rescue/RescueBox-Desktop/releases)
