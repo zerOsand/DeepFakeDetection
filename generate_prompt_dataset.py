@@ -6,7 +6,7 @@ import random
 #Variable Attributes
 
 
-#Personal Attributes (Stuff about the subject)
+#Personal Attributes (Stuff about the subject) 
 possible_genders = ["Male", "Female"] #Consider wording Man/Woman or Boy/Girl
 possible_ages = ["Young", "Middle-aged", "Old"] #Consider just doing an age range
 possible_ethnicities = ["Caucasian", "African American", "East Asian", "Hispanic", "Middle Eastern", "Indian"]
@@ -37,4 +37,64 @@ possible_camera_types = ["DSLR", "Mirrorless", "Smartphone", "Webcam", "Surveill
 # Looking for shots that have the upper body
 
 image_sizes = [256, 2048] #This is range that will determine the size of the image. Ex. x and y are between images_sizes[0] and images_sizes[1]
+
+
+
+#Prompt generation logic.
+
+
+#Subject attributes
+always_present_attributes = []
+always_present_attributes.append(possible_genders)
+always_present_attributes.append(possible_ages)
+always_present_attributes.append(possible_ethnicities)
+
+sometimes_present_attributes = []
+sometimes_present_attributes.append(possible_expressions)
+sometimes_present_attributes.append(possible_hair_colors)
+sometimes_present_attributes.append(possible_hair_styles)
+sometimes_present_attributes.append(possible_heights)
+sometimes_present_attributes.append(possible_body_types)
+sometimes_present_attributes.append(possible_clothing_styles)
+sometimes_present_attributes.append(accessories)
+
+for i in range(len(always_present_attributes)):
+    always_present_attributes[i] = random.choice(always_present_attributes[i])
+
+for i in range(len(sometimes_present_attributes)):
+    if random.random() < 0.25:
+        sometimes_present_attributes[i] = random.choice(sometimes_present_attributes[i])
+    else:
+        sometimes_present_attributes[i] = None
+    
+subject_attributes = {
+    "Gender": always_present_attributes[0],
+    "Age": always_present_attributes[1],
+    "Ethnicity": always_present_attributes[2],
+    "Expression": sometimes_present_attributes[0],
+    "Hair Color": sometimes_present_attributes[1],
+    "Hair Style": sometimes_present_attributes[2],
+    "Height": sometimes_present_attributes[3],
+    "Body Type": sometimes_present_attributes[4],
+    "Clothing Style": sometimes_present_attributes[5],
+    "Accessories": sometimes_present_attributes[6],
+}
+
+#Remove any "None" valued keys
+subject_attributes = {k: v for k, v in subject_attributes.items() if v is not None}
+
+
+#Image attributes
+
+image_attributes = {
+    "Background": random.choice(possible_backgrounds),
+    "Background Complexity": random.choice(possible_background_complexity),
+    "Lighting Conditions": random.choice(possible_lighting_conditions),
+    "Depth of Field": random.choice(possible_depth_of_field),
+    "Camera Type": random.choice(possible_camera_types),
+    "Image Size": "{}x{}".format(random.randint(image_sizes[0], image_sizes[1]), random.randint(image_sizes[0], image_sizes[1])),
+}
+
+print("Subject Attributes:", subject_attributes)
+print("Image Attributes:", image_attributes)
 
