@@ -36,7 +36,7 @@ possible_camera_types = ["DSLR", "Mirrorless", "Smartphone", "Webcam", "Surveill
 #possible_camera_angles = ["Close-up", "Medium Shot", "Wide Shot"] #Don't know if its good to specify this. 
 # Looking for shots that have the upper body
 
-image_sizes = [256, 2048] #This is range that will determine the size of the image. Ex. x and y are between images_sizes[0] and images_sizes[1]
+image_sizes = [512, 1444] #This is range that will determine the size of the image. Ex. x and y are between images_sizes[0] and images_sizes[1]
 
 
 
@@ -58,43 +58,84 @@ sometimes_present_attributes.append(possible_body_types)
 sometimes_present_attributes.append(possible_clothing_styles)
 sometimes_present_attributes.append(accessories)
 
-for i in range(len(always_present_attributes)):
-    always_present_attributes[i] = random.choice(always_present_attributes[i])
-
-for i in range(len(sometimes_present_attributes)):
-    if random.random() < 0.25:
-        sometimes_present_attributes[i] = random.choice(sometimes_present_attributes[i])
-    else:
-        sometimes_present_attributes[i] = None
+def create_subject_attributes(always_present_attributes, sometimes_present_attributes):
+    selected_always_present = [random.choice(attribute) for attribute in always_present_attributes]
+    selected_sometimes_present = [
+        random.choice(attribute) if random.random() < 0.25 else None 
+        for attribute in sometimes_present_attributes
+    ]
     
-subject_attributes = {
-    "Gender": always_present_attributes[0],
-    "Age": always_present_attributes[1],
-    "Ethnicity": always_present_attributes[2],
-    "Expression": sometimes_present_attributes[0],
-    "Hair Color": sometimes_present_attributes[1],
-    "Hair Style": sometimes_present_attributes[2],
-    "Height": sometimes_present_attributes[3],
-    "Body Type": sometimes_present_attributes[4],
-    "Clothing Style": sometimes_present_attributes[5],
-    "Accessories": sometimes_present_attributes[6],
-}
+    subject_attributes = {
+        "Gender": selected_always_present[0],
+        "Age": selected_always_present[1],
+        "Ethnicity": selected_always_present[2],
+        "Expression": selected_sometimes_present[0],
+        "Hair Color": selected_sometimes_present[1],
+        "Hair Style": selected_sometimes_present[2],
+        "Height": selected_sometimes_present[3],
+        "Body Type": selected_sometimes_present[4],
+        "Clothing Style": selected_sometimes_present[5],
+        "Accessories": selected_sometimes_present[6],
+    }
+    return subject_attributes
+#subject_attributes = create_subject_attributes(always_present_attributes, sometimes_present_attributes)
 
 #Remove any "None" valued keys
-subject_attributes = {k: v for k, v in subject_attributes.items() if v is not None}
-
+#subject_attributes = {k: v for k, v in subject_attributes.items() if v is not None}
 
 #Image attributes
 
-image_attributes = {
-    "Background": random.choice(possible_backgrounds),
-    "Background Complexity": random.choice(possible_background_complexity),
-    "Lighting Conditions": random.choice(possible_lighting_conditions),
-    "Depth of Field": random.choice(possible_depth_of_field),
-    "Camera Type": random.choice(possible_camera_types),
-    "Image Size": "{}x{}".format(random.randint(image_sizes[0], image_sizes[1]), random.randint(image_sizes[0], image_sizes[1])),
-}
+# image_attributes = {
+#     "Background": random.choice(possible_backgrounds),
+#     "Background Complexity": random.choice(possible_background_complexity),
+#     "Lighting Conditions": random.choice(possible_lighting_conditions),
+#     "Depth of Field": random.choice(possible_depth_of_field),
+#     "Camera Type": random.choice(possible_camera_types),
+#     "Image Size": "{}x{}".format(random.randint(image_sizes[0], image_sizes[1]), random.randint(image_sizes[0], image_sizes[1])),
+# }
 
-print("Subject Attributes:", subject_attributes)
-print("Image Attributes:", image_attributes)
+def create_image_attributes():
+    image_x = random.randint(image_sizes[0], image_sizes[1])
+    #image y is somewhere between half and twice the x value
+    image_y = random.randint(image_x // 2, image_x * 2)
+    image_attributes = {
+        "Background": random.choice(possible_backgrounds),
+        "Background Complexity": random.choice(possible_background_complexity),
+        "Lighting Conditions": random.choice(possible_lighting_conditions),
+        "Depth of Field": random.choice(possible_depth_of_field),
+        "Camera Type": random.choice(possible_camera_types),
+        "Image Size": "{}x{}".format(image_x, image_y),
+    }
+    return image_attributes
+#image_attributes = create_image_attributes()
+
+prompts = []
+num_prompts = 100 #Number of prompts to generate
+#Create a list of prompts
+for i in range(num_prompts):
+    prompt = "Generate an image of a person using the following: "
+    subject_attributes = create_subject_attributes(always_present_attributes, sometimes_present_attributes)
+    image_attributes = create_image_attributes()
+    #Remove any "None" valued keys
+    subject_attributes = {k: v for k, v in subject_attributes.items() if v is not None}
+    prompt += "Subject Attributes: {"
+    for key, value in subject_attributes.items():
+        prompt += "{}: {}, ".format(key, value)
+    prompt = prompt[:-2] + "}, "
+    prompt += "Image Attributes: {"
+    for key, value in image_attributes.items():
+        prompt += "{}: {}, ".format(key, value)
+    prompt = prompt[:-2] + "}"
+    prompts.append(prompt)
+
+#Print the prompts
+for prompt in prompts:
+    print(prompt)
+
+#Save the prompts to a file
+with open("prompts.txt", "w") as f:
+    for prompt in prompts:
+        f.write(prompt + "\n")
+
+
 
