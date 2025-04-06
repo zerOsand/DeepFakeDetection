@@ -1,3 +1,4 @@
+# imports
 import argparse
 import csv
 import warnings
@@ -12,10 +13,9 @@ from flask_ml.flask_ml_server.models import (
     ResponseBody,
     TaskSchema,
 )
-from process.bnext_process import BNextModelONNX
-from process.transformer_process import TransformerModel
+from process.bnext import BNextModelONNX
+from process.transformer import TransformerModelONNX
 from random import randint
-
 import os
 from sim_data import defaultDataset
 
@@ -26,7 +26,7 @@ warnings.filterwarnings("ignore")
 def create_transform_case_task_schema() -> TaskSchema:
     input_schema = InputSchema(
         key="input_dataset",
-        label="Path to the directory containing all the images",
+        label="Path to the directory containing all images",
         input_type=InputType.DIRECTORY,
     )
     output_schema = InputSchema(
@@ -57,8 +57,7 @@ server.add_app_metadata(
     info=load_file_as_string("img-app-info.md"),
 )
 
-models = [BNextModelONNX(), TransformerModel()]
-# model = DeepFakeModel("deepfake_image_model.onnx")
+models = [BNextModelONNX(), TransformerModelONNX()]
 
 
 def run_models(models, dataset):
@@ -74,23 +73,18 @@ def run_models(models, dataset):
             image_path = sample["image_path"]
             original_res = sample["original_res"]
 
-            # Preprocess the image
+            # Preprocess, predict, postprocess
             preprocessed_image = model.preprocess(image)
-
-            # Get the prediction
             prediction = model.predict(preprocessed_image)
-
-            # Postprocess the prediction
             processed_prediction = model.postprocess(prediction)
 
-            # Add the name of the image to the prediction
+            # Add image name to prediction
             processed_prediction["image_path"] = image_path
 
             # Append the result to the list
             model_results.append(processed_prediction)
 
         results.append(model_results)
-
     return results
 
 

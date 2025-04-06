@@ -177,3 +177,7 @@ cython_debug/
 .pypirc
 .DS_Store
 *.onnx
+DistilDIRE/
+sample_input/
+onnx_models/
+sample_output/

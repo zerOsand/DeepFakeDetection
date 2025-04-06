@@ -1,5 +1,0 @@
-image_path,prediction,confidence
-DeepFakeDetection/sample_input/real/ana.png,uncertain,0.5736324191093445
-DeepFakeDetection/sample_input/real/tory.jpg,real,0.9614304900169373
-DeepFakeDetection/sample_input/real/arteezy.png,real,0.9996144771575928
-DeepFakeDetection/sample_input/real/dendi.jpg,uncertain,0.5616362690925598

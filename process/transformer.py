@@ -69,8 +69,8 @@ class TransformerModelONNX:
         # print("Probabilities:", probabilities)
         # Format the prediction result
         prediction = {
-            "label": "real" if probabilities[0] > probabilities[1] else "fake",
-            "score": float(
+            "prediction": "real" if probabilities[0] > probabilities[1] else "fake",
+            "confidence": float(
                 max(probabilities)
             ),  # Convert to float for better readability
         }

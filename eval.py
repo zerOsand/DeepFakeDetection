@@ -1,16 +1,10 @@
 import argparse
-
-# import matplotlib.pyplot as plt
-# from BNN github
-# import model as model
-# import numpy as np
-
 from sim_data import defaultDataset
-
-from process.transformer_process import TransformerModel
-from process.bnext_process import BNextModelONNX
-from process.transformer_onnx_process import TransformerModelONNX
+from process.transformer import TransformerModelONNX
+from process.bnext import BNextModelONNX
 import os
+import json
+import pandas as pd
 
 
 def args_func():
@@ -33,11 +27,11 @@ def args_func():
     return args
 
 
-def get_area_ratio(img1, img2):
-    print(img1, img2)
-    h1, w1 = img1
-    h2, w2 = img2
-    return (h1 * w1) / (h2 * w2)
+# def get_area_ratio(img1, img2):
+#     print(img1, img2)
+#     h1, w1 = img1
+#     h2, w2 = img2
+#     return (h1 * w1) / (h2 * w2)
 
 
 # Inputs: models (list of model objects), dataset (dataset object)
@@ -52,6 +46,7 @@ def run_models(models, dataset):
             len(dataset)
         ):  # This is done one image at a time to avoid memory issues
             sample = dataset[i]
+            print(sample)
             image = sample["image"]
             image_path = sample["image_path"]
             original_res = sample["original_res"]
@@ -78,14 +73,13 @@ def run_models(models, dataset):
 
 if __name__ == "__main__":
     available_models = {
-        cls.__name__: cls
-        for cls in [TransformerModel, BNextModelONNX, TransformerModelONNX]
+        cls.__name__: cls for cls in [BNextModelONNX, TransformerModelONNX]
     }
-
-    input_path = "sample_input/real"
+    input_path = "sample_input"
 
     args = args_func()
-    input_path = args.dataset_path
+    if args.dataset_path:
+        input_path = args.dataset_path
     # Check if the input is a valid path
     if not os.path.exists(input_path):
         raise ValueError(f"Invalid path: {input_path}")
@@ -127,4 +121,9 @@ if __name__ == "__main__":
 
     results = run_models(models_to_use, test_dataset)
 
-    print(results)
+    with open("sample_output/out.json", "w") as f:
+        json.dump(results, f, indent=4)
+
+    flattened_results = [item for model_results in results for item in model_results]
+    o = pd.DataFrame(flattened_results)  # Convert to a pandas DataFrame
+    o.to_csv("sample_output/out.csv", index=False)  # Save as a CSV file

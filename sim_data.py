@@ -10,7 +10,6 @@ class defaultDataset:
         assert isdir(dataset_path), f"Dataset path {dataset_path} does not exist."
         self.dataset_path = dataset_path
         self.resolution = resolution
-
         self.images = []
         for image_path in listdir(dataset_path):
             if (
@@ -18,12 +17,7 @@ class defaultDataset:
                 or image_path.lower().endswith(".png")
                 or image_path.lower().endswith(".jpeg")
             ):
-                self.images.append(
-                    dataset_path
-                    + "/"
-                    + image_path
-                    + ("F" if image_path[0] == "F" else "R")
-                )
+                self.images.append(dataset_path + "/" + image_path)
 
     def __len__(self):
         return len(self.images)
@@ -36,14 +30,14 @@ class defaultDataset:
 
     def __getitem__(self, i):
         try:
-            image, res = self.read_image(self.images[i][:-1])
+            image, res = self.read_image(self.images[i])
         except:
             print(f"Error reading image {self.images[i]}")
             return None
         sample = {
             "image_path": self.images[i],
             "image": image,  # Now returns the PIL image directly
-            "is_real": np.array([1 if self.images[i][-1] == "R" else 0]),
+            "is_real": np.array([1 if "R_" in self.images[i] else 0]),
             "original_res": res,
         }
         return sample
