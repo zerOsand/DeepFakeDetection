@@ -117,13 +117,15 @@ def give_prediction(inputs: Inputs, parameters: Parameters) -> ResponseBody:
     # Build CSV content
     csv_rows = []
     # Add model names header
-    csv_rows.append(["Model:"]+ [m["name"] for m in model_data])
+    csv_rows.append(["Model:"] + [m["name"] for m in model_data])
 
     # Add prediction rows grouped by path
     for i in range(len(model_data[0]["predictions"])):
         # Path row
-        path = [os.path.basename(model_data[0]["predictions"][i]["image_path"])] * len(models)
-        
+        path = [os.path.basename(model_data[0]["predictions"][i]["image_path"])] * len(
+            models
+        )
+
         # Prediction row
         preds = [m["predictions"][i]["prediction"] for m in model_data]
 
@@ -133,7 +135,7 @@ def give_prediction(inputs: Inputs, parameters: Parameters) -> ResponseBody:
         ]
 
         # Add the rows
-        csv_rows.append(["Path:"] + path) 
+        csv_rows.append(["Path:"] + path)
         csv_rows.append(["Prediction:"] + preds)
         csv_rows.append(["Confidence:"] + confidences)
 
