@@ -88,7 +88,12 @@ def run_models(models, dataset):
     return results
 
 
-@server.route("/predict", task_schema_func=create_transform_case_task_schema, short_title="DeepFake Detection", order=0)
+@server.route(
+    "/predict",
+    task_schema_func=create_transform_case_task_schema,
+    short_title="DeepFake Detection",
+    order=0,
+)
 def give_prediction(inputs: Inputs, parameters: Parameters) -> ResponseBody:
     input_path = inputs["input_dataset"].path
     out = Path(inputs["output_file"].path)
