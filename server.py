@@ -14,7 +14,7 @@ from flask_ml.flask_ml_server.models import (
     TaskSchema,
 )
 from process.bnext import BNextModelONNX
-from process.transformer import TransformerModel
+from process.transformer import TransformerModelONNX
 from random import randint
 import os
 from sim_data import defaultDataset
@@ -54,7 +54,7 @@ server.add_app_metadata(
     info=load_file_as_string("img-app-info.md"),
 )
 
-models = [BNextModelONNX(), TransformerModel()]
+models = [BNextModelONNX(), TransformerModelONNX()]
 
 
 def run_models(models, dataset):

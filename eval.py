@@ -3,7 +3,6 @@ from sim_data import defaultDataset
 from process.transformer import TransformerModelONNX
 from process.bnext import BNextModelONNX
 import os
-import numpy as np
 import json
 import pandas as pd
 
