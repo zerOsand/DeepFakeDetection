@@ -3,16 +3,6 @@ This repo demonstrates an example of how to run ONNX models. This example is aim
 
 This example uses a deep fake model that was originally created by students in the Fall 2024 offering of 596E. The model has been modified to work with ONNX models. The model is used to classify images as either real or fake.
 
-## Steps to download exported ONNX model
-1. Download the ONNX models [here](https://drive.google.com/drive/u/5/folders/14UJap0G5YkdQoXCbjclhrv5gxswtuDit).
-2. In the root, create a directory named `onnx_models` and place the downloaded ONNX models into into it.
-3. To test if it works, follow the steps for either running the Flask-ML server or the CLI. If there are any problems with Numpy, for example, `RuntimeError: Numpy is not available`, consider downgrading to a 1.X version of Numpy with the following commands:
-
-```bash
-pip uninstall numpy
-pip install "numpy<2"
-```
-
 ## Steps to export the ONNX model
 
 Exporting the ONNX model involved the following key steps:
@@ -42,8 +32,15 @@ Install the dependencies using the following command:
 pip install -r requirements.txt
 ```
 
-### Download the model
-Download the model from the following link: [DeepFake model](https://drive.google.com/file/d/1xvJrHs5aJuiVw1X0lIlBzWCEn3WzvjN0/view?usp=sharing). Place the model in the root directory of this project.
+### Download the ONNX models
+1. Download the ONNX models:  [DeepFake Models Google Drive](https://drive.google.com/drive/folders/14UJap0G5YkdQoXCbjclhrv5gxswtuDit?usp=drive_link).
+2. In the root, create a directory named `onnx_models` and place the downloaded ONNX models into into it.
+3. To test if it works, follow the steps for either running the Flask-ML server or the CLI. If there are any problems with Numpy, for example, `RuntimeError: Numpy is not available`, consider downgrading to a 1.X version of Numpy with the following commands:
+
+```bash
+pip uninstall numpy
+pip install "numpy<2"
+```
 
 ### Run the Flask-ML server
 
