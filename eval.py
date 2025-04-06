@@ -6,6 +6,7 @@ import os
 import json
 import pandas as pd
 
+
 def args_func():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -24,6 +25,7 @@ def args_func():
 
     args = parser.parse_args()
     return args
+
 
 # def get_area_ratio(img1, img2):
 #     print(img1, img2)
@@ -71,9 +73,8 @@ def run_models(models, dataset):
 
 if __name__ == "__main__":
     available_models = {
-         cls.__name__: cls
-         for cls in [BNextModelONNX, TransformerModelONNX]
-     }
+        cls.__name__: cls for cls in [BNextModelONNX, TransformerModelONNX]
+    }
     input_path = "sample_input"
 
     args = args_func()
@@ -122,7 +123,7 @@ if __name__ == "__main__":
 
     with open("sample_output/out.json", "w") as f:
         json.dump(results, f, indent=4)
-    
+
     flattened_results = [item for model_results in results for item in model_results]
     o = pd.DataFrame(flattened_results)  # Convert to a pandas DataFrame
     o.to_csv("sample_output/out.csv", index=False)  # Save as a CSV file

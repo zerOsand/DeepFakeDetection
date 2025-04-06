@@ -4,6 +4,7 @@ import torch
 import onnxruntime as ort
 import numpy as np
 
+
 class BNextModelONNX:
     def __init__(self, model_path="onnx_models/bnext_model.onnx", resolution=224):
         self.session = ort.InferenceSession(
@@ -22,7 +23,7 @@ class BNextModelONNX:
                 ),
                 T.CenterCrop(self.resolution),
                 T.ToImage(),
-                T.ToDtype(torch.float32, scale = True),
+                T.ToDtype(torch.float32, scale=True),
             ]
         )(image)[
             None,

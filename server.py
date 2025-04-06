@@ -21,6 +21,7 @@ from sim_data import defaultDataset
 
 warnings.filterwarnings("ignore")
 
+
 # Configure UI Elements in RescueBox Desktop
 def create_transform_case_task_schema() -> TaskSchema:
     input_schema = InputSchema(
@@ -41,8 +42,10 @@ class Inputs(TypedDict):
     input_dataset: DirectoryInput
     output_file: DirectoryInput
 
+
 class Parameters(TypedDict):
     pass
+
 
 # Create a server instance
 server = MLServer(__name__)

@@ -4,6 +4,7 @@ from os.path import isdir
 import numpy as np
 from PIL import Image
 
+
 class defaultDataset:
     def __init__(self, dataset_path, resolution=224):
         assert isdir(dataset_path), f"Dataset path {dataset_path} does not exist."
@@ -16,11 +17,7 @@ class defaultDataset:
                 or image_path.lower().endswith(".png")
                 or image_path.lower().endswith(".jpeg")
             ):
-                self.images.append(
-                    dataset_path
-                    + "/"
-                    + image_path
-                )
+                self.images.append(dataset_path + "/" + image_path)
 
     def __len__(self):
         return len(self.images)
