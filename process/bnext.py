@@ -36,12 +36,20 @@ class BNextModelONNX:
 
         confidence = confidence.item()
 
-        label = ("likely fake" if confidence < 0.2 else
-                 "weakly fake" if confidence < 0.4 else
-                 "uncertain" if confidence < 0.6 else
-                 "weakly real" if confidence < 0.8 else
-                 "likely real")
-        
+        label = (
+            "likely fake"
+            if confidence < 0.2
+            else (
+                "weakly fake"
+                if confidence < 0.4
+                else (
+                    "uncertain"
+                    if confidence < 0.6
+                    else "weakly real" if confidence < 0.8 else "likely real"
+                )
+            )
+        )
+
         return {"prediction": label, "confidence": confidence}
 
     def postprocess(self, output):

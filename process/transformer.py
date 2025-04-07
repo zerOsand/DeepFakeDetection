@@ -70,9 +70,9 @@ class TransformerModelONNX:
         confidence = float(max(probabilities))
         raw_label = "real" if probabilities[0] > probabilities[1] else "fake"
         strength = (
-            "likely" if confidence < 0.2 or confidence > 0.8 else
-            "weakly" if confidence < 0.4 or confidence > 0.6 else
-            "uncertain"
+            "likely"
+            if confidence < 0.2 or confidence > 0.8
+            else "weakly" if confidence < 0.4 or confidence > 0.6 else "uncertain"
         )
 
         if strength == "uncertain":
@@ -80,10 +80,7 @@ class TransformerModelONNX:
         else:
             label = f"{strength} {raw_label}"
 
-        prediction = {
-            "prediction": label,
-            "confidence": confidence
-        }
+        prediction = {"prediction": label, "confidence": confidence}
 
         # Return the processed result
         return prediction
