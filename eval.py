@@ -9,6 +9,7 @@ from sim_data import defaultDataset
 
 from process.transformer_process import TransformerModel
 from process.bnext_process import BNextModelONNX
+from process.transformer_onnx_process import TransformerModelONNX
 import os
 
 
@@ -76,8 +77,7 @@ def run_models(models, dataset):
 
 
 if __name__ == "__main__":
-    available_models = {cls.__name__: cls for cls in [TransformerModel, BNextModelONNX]}
-
+    available_models = {cls.__name__: cls for cls in [TransformerModel, BNextModelONNX, TransformerModelONNX]}
     input_path = "sample_input/real"
 
     args = args_func()
@@ -123,4 +123,21 @@ if __name__ == "__main__":
 
     results = run_models(models_to_use, test_dataset)
 
-    print(results)
+    #print(results)
+
+    # Assuming all images are fake, evaluate accuracy of each model
+    # for model_results in results:
+    #     model_name = model_results[0]["model_name"]
+    #     correct_predictions = 0
+    #     total_predictions = len(model_results) - 1  # Exclude the first entry which is the model name
+
+    #     for i in range(1, len(model_results)):
+    #         prediction = model_results[i]
+    #         print(prediction)
+    #         if prediction["prediction"].lower() == "fake":
+    #             correct_predictions += 1
+
+    #     accuracy = correct_predictions / total_predictions * 100
+    #     print(f"Accuracy of {model_name}: {accuracy:.2f}%")
+    #     print("--" * 20)
+        
