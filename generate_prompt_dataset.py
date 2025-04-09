@@ -8,7 +8,7 @@ import random
 
 #Personal Attributes (Stuff about the subject) 
 possible_genders = ["Male", "Female"] #Consider wording Man/Woman or Boy/Girl
-possible_ages = ["Young", "Middle-aged", "Old"] #Consider just doing an age range
+possible_ages = ["Young (15-20)", "Young Adult (20-30)", "Adult (30-40)", "Middle Aged (40-64)", "Old (65+)"] #Consider using a numerical range of ages
 possible_ethnicities = ["Caucasian", "African American", "East Asian", "Hispanic", "Middle Eastern", "Indian"]
 #possible_ethnicities = ["White", "Black", "Asian", "Latino", "Middle Eastern", "Indian"] #More informal terms
 #possible_skin_tones = ["Light", "Medium", "Dark"] #Possible alternative or addition to ethnicities
@@ -23,18 +23,51 @@ possible_body_types = ["Slim", "Athletic", "Average", "Overweight", "Obese"] #Do
 
 #possible_skin_markings = ["Freckles", "Scars", "Tattoos", "Moles", "Birthmarks"] #Usure about this one
 
-possible_clothing_styles = ["Casual", "Formal", "Business Casual"] #maybe consider specific clothing items
-accessories = ["Glasses", "Hat", "Jewelry"] 
+possible_clothing_styles = [
+    "Casual Wear", "Formal Wear", "Business Attire",
+    "Business Casual", "Athletic Wear", "Streetwear",
+    "Winter Wear", "Summer Wear",
+] #maybe consider specific clothing items
+accessories = [
+    "Eyewear", "Headwear", "Jewelry",
+    "Bags or Backpacks",
+    "Smartphone", "Face Coverings",
+    "Outerwear Accessories", "Hair Accessories",
+    "Watches or Wrist Accessories", "Scarves or Wraps",
+    "Headphones or Earbuds", "Gloves or Hand Accessories",
+]
+
 
 #Image Attributes (Stuff about the image)
-possible_backgrounds = ["Nature", "Urban", "Indoor", "Outdoor"] #maybe split into categories and use subcategories
+possible_backgrounds = ["Indoor", "Outdoor"] #maybe split into categories and use subcategories
+indoor_backgrounds = [
+    "Living Room", "Bedroom", "Office", "Classroom",
+    "Kitchen", "Bathroom", "Gym", "Library",
+    "Hallway", "Studio", "Conference Room",
+    "Garage", "Basement", "Dining Room",
+    "Lobby", "Elevator Interior", "Waiting Room",
+    "Retail Store Interior", "Storage Room", "Restaurant Interior",
+    "Auditorium", "College Campus"
+]
+outdoor_backgrounds = [
+    "Urban Street", "Park", "Forest", "Beach",
+    "Mountain Path", "Countryside",
+    "City Skyline", "Rooftop", "Train Station Platform",
+    "Outdoor Cafe", "Playground", "Open Field",
+    "Residential Neighborhood", "Riverbank", "Parking Lot",
+    "Street Market", "Suburban Sidewalk", "Snowy Landscape",
+    "Garden"
+]
 possible_background_complexity = ["Simple", "Detailed"] #maybe split into categories and use subcategories
-possible_lighting_conditions = ["Day", "Night", "Artificial Light"] #maybe split into categories and use subcategories
+possible_lighting_conditions = ["Dim", "Bright", "Natural", "Artificial"] #maybe split into categories and use subcategories
 possible_depth_of_field = ["Shallow (Blurred Background)", "Deep (Everything in Focus)"] #maybe split into categories and use subcategories
-possible_camera_types = ["DSLR", "Mirrorless", "Smartphone", "Webcam", "Surveillance Camera"] #maybe split into categories and use subcategories
-
-#possible_camera_angles = ["Close-up", "Medium Shot", "Wide Shot"] #Don't know if its good to specify this. 
-# Looking for shots that have the upper body
+possible_camera_types = ["DSLR", "Mirrorless", "Smartphone", "Webcam"] #maybe split into categories and use subcategories
+possible_camera_angles = [
+    "Close-up (Head and Shoulders)",
+    "Medium Shot (Upper Body and Some Legs)",
+    "Wide Shot (Full Body)",
+    "Dynamic Angle (Non-Head-On, e.g., 45-degree Side Profile)"
+]
 
 image_sizes = [512, 1444] #This is range that will determine the size of the image. Ex. x and y are between images_sizes[0] and images_sizes[1]
 
@@ -48,6 +81,8 @@ always_present_attributes = []
 always_present_attributes.append(possible_genders)
 always_present_attributes.append(possible_ages)
 always_present_attributes.append(possible_ethnicities)
+always_present_attributes.append(possible_clothing_styles)
+always_present_attributes.append(accessories)
 
 sometimes_present_attributes = []
 sometimes_present_attributes.append(possible_expressions)
@@ -55,13 +90,12 @@ sometimes_present_attributes.append(possible_hair_colors)
 sometimes_present_attributes.append(possible_hair_styles)
 sometimes_present_attributes.append(possible_heights)
 sometimes_present_attributes.append(possible_body_types)
-sometimes_present_attributes.append(possible_clothing_styles)
-sometimes_present_attributes.append(accessories)
+
 
 def create_subject_attributes(always_present_attributes, sometimes_present_attributes):
     selected_always_present = [random.choice(attribute) for attribute in always_present_attributes]
     selected_sometimes_present = [
-        random.choice(attribute) if random.random() < 0.25 else None 
+        random.choice(attribute) if random.random() < 0.33 else None 
         for attribute in sometimes_present_attributes
     ]
     
@@ -74,9 +108,14 @@ def create_subject_attributes(always_present_attributes, sometimes_present_attri
         "Hair Style": selected_sometimes_present[2],
         "Height": selected_sometimes_present[3],
         "Body Type": selected_sometimes_present[4],
-        "Clothing Style": selected_sometimes_present[5],
-        "Accessories": selected_sometimes_present[6],
+        "Clothing Style": selected_always_present[3],
+        "Accessories": selected_always_present[4],
     }
+    # For accessories, keep adding additional accessories with a 10% chance until no more are added
+    while random.random() < 0.2:
+        additional_accessory = random.choice(accessories)
+        if additional_accessory not in subject_attributes["Accessories"]:
+            subject_attributes["Accessories"] += f", {additional_accessory}"
     return subject_attributes
 #subject_attributes = create_subject_attributes(always_present_attributes, sometimes_present_attributes)
 
@@ -98,12 +137,20 @@ def create_image_attributes():
     image_x = random.randint(image_sizes[0], image_sizes[1])
     #image y is somewhere between half and twice the x value
     image_y = random.randint(image_x // 2, image_x * 2)
+    background_type = random.choice(possible_backgrounds)
+    background = ""
+    if background_type == "Indoor":
+        background = random.choice(indoor_backgrounds)
+    else:
+        background = random.choice(outdoor_backgrounds)
+    
     image_attributes = {
-        "Background": random.choice(possible_backgrounds),
+        "Background": background,
         "Background Complexity": random.choice(possible_background_complexity),
         "Lighting Conditions": random.choice(possible_lighting_conditions),
         "Depth of Field": random.choice(possible_depth_of_field),
         "Camera Type": random.choice(possible_camera_types),
+        "Camera Angle": random.choice(possible_camera_angles),
         "Image Size": "{}x{}".format(image_x, image_y),
     }
     return image_attributes
@@ -126,6 +173,10 @@ for i in range(num_prompts):
     for key, value in image_attributes.items():
         prompt += "{}: {}, ".format(key, value)
     prompt = prompt[:-2] + "}"
+    if random.random() < 0.5:
+        prompt += " Ensure the final image does not have any dominant color wash or filter."
+    else:
+        prompt += " Ensure you use a neutral/cool color temperature."
     prompts.append(prompt)
 
 #Print the prompts
