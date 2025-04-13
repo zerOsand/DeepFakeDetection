@@ -9,7 +9,14 @@ import random
 #Personal Attributes (Stuff about the subject) 
 possible_genders = ["Male", "Female"] #Consider wording Man/Woman or Boy/Girl
 possible_ages = ["Young (15-20)", "Young Adult (20-30)", "Adult (30-40)", "Middle Aged (40-64)", "Old (65+)"] #Consider using a numerical range of ages
-possible_ethnicities = ["Caucasian", "African American", "East Asian", "Hispanic", "Middle Eastern", "Indian"]
+possible_ethnicities = [
+    "African Descent", 
+    "European", "American (Non-European)", 
+    "East Asian", "South Asian", 
+    "Hispanic", "Middle Eastern",
+    "South American", "Southeast Asian",
+    "Mixed"
+]
 #possible_ethnicities = ["White", "Black", "Asian", "Latino", "Middle Eastern", "Indian"] #More informal terms
 #possible_skin_tones = ["Light", "Medium", "Dark"] #Possible alternative or addition to ethnicities
 possible_expressions = ["Happy", "Sad", "Angry", "Surprised", "Neutral"] 
@@ -18,7 +25,7 @@ possible_expressions = ["Happy", "Sad", "Angry", "Surprised", "Neutral"]
 #Ex. a bald woman may not be a good image to use for a deepfake dataset.
 possible_hair_colors = ["Black", "Brown", "Blonde", "Red", "Gray"]
 possible_hair_styles = ["Short", "Medium", "Long", "Bald"] 
-possible_heights = ["Short", "Medium", "Tall"] #Consider using a neumerical range of heights or excluding this all together.
+possible_heights = ["Short", "Average", "Tall"] #Consider using a neumerical range of heights or excluding this all together.
 possible_body_types = ["Slim", "Athletic", "Average", "Overweight", "Obese"] #Don't really know how to phrase this one nicely
 
 #possible_skin_markings = ["Freckles", "Scars", "Tattoos", "Moles", "Birthmarks"] #Usure about this one
@@ -26,15 +33,15 @@ possible_body_types = ["Slim", "Athletic", "Average", "Overweight", "Obese"] #Do
 possible_clothing_styles = [
     "Casual Wear", "Formal Wear", "Business Attire",
     "Business Casual", "Athletic Wear", "Streetwear",
-    "Winter Wear", "Summer Wear",
+    "Winter Wear", "Summer Wear", "Uniform",
 ] #maybe consider specific clothing items
 accessories = [
     "Eyewear", "Headwear", "Jewelry",
     "Bags or Backpacks",
     "Smartphone", "Face Coverings",
     "Outerwear Accessories", "Hair Accessories",
-    "Watches or Wrist Accessories", "Scarves or Wraps",
-    "Headphones or Earbuds", "Gloves or Hand Accessories",
+    "Watches or Wrist Accessories",
+    "Headphones", "Hand Accessories",
 ]
 
 
@@ -54,7 +61,7 @@ outdoor_backgrounds = [
     "Mountain Path", "Countryside",
     "City Skyline", "Rooftop", "Train Station Platform",
     "Outdoor Cafe", "Playground", "Open Field",
-    "Residential Neighborhood", "Riverbank", "Parking Lot",
+    "Residential Neighborhood", "Riverbank", "Sparse Parking Lot",
     "Street Market", "Suburban Sidewalk", "Snowy Landscape",
     "Garden"
 ]
@@ -111,11 +118,18 @@ def create_subject_attributes(always_present_attributes, sometimes_present_attri
         "Clothing Style": selected_always_present[3],
         "Accessories": selected_always_present[4],
     }
-    # For accessories, keep adding additional accessories with a 10% chance until no more are added
+    # For accessories, keep adding additional accessories with a 20% chance until no more are added
     while random.random() < 0.2:
         additional_accessory = random.choice(accessories)
         if additional_accessory not in subject_attributes["Accessories"]:
             subject_attributes["Accessories"] += f", {additional_accessory}"
+    # If ethnicity is "Mixed", replace with Mixed (randomly select 2 from the list)
+    if subject_attributes["Ethnicity"] == "Mixed":
+        selected_ethnicities = random.sample(
+            [eth for eth in possible_ethnicities if eth != "Mixed"], 2
+        )
+        subject_attributes["Ethnicity"] = f"Mixed ({selected_ethnicities[0]} and {selected_ethnicities[1]})"
+    
     return subject_attributes
 #subject_attributes = create_subject_attributes(always_present_attributes, sometimes_present_attributes)
 
