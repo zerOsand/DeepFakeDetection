@@ -59,7 +59,12 @@ server.add_app_metadata(
     info=load_file_as_string("img-app-info.md"),
 )
 
-models = [BNext_M_ModelONNX(), BNext_S_ModelONNX(), TransformerModelONNX(), TransformerModelDimaONNX()]
+models = [
+    BNext_M_ModelONNX(),
+    BNext_S_ModelONNX(),
+    TransformerModelONNX(),
+    TransformerModelDimaONNX(),
+]
 
 
 def run_models(models, dataset):
