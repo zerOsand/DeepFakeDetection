@@ -20,6 +20,7 @@ from process.transformerDima_onnx_process import TransformerModelDimaONNX
 from random import randint
 import os
 from sim_data import defaultDataset
+from collections import defaultdict
 
 warnings.filterwarnings("ignore")
 
@@ -122,29 +123,42 @@ def give_prediction(inputs: Inputs, parameters: Parameters) -> ResponseBody:
     # Build CSV content
     csv_rows = []
     # Add model names header
-    csv_rows.append(["Model:"] + [m["name"] for m in model_data])
+    csv_rows.append(["Model:"] + [m["name"] for m in model_data] + ["Aggregate"])
 
-    # Add prediction rows grouped by path
-    for i in range(len(model_data[0]["predictions"])):
-        # Path row
-        path = [os.path.basename(model_data[0]["predictions"][i]["image_path"])] * len(
-            models
+    # Loop over each image (driven by the first model's predictions)
+    num_images = len(model_data[0]["predictions"])
+    for i in range(num_images):
+        # Extract the common image path (basename)
+        path = os.path.basename(model_data[0]["predictions"][i]["image_path"])
+
+        # Get each model's prediction and confidence for image i
+        preds = [m["predictions"][i]["prediction"] for m in model_data]
+        confs = [m["predictions"][i]["confidence"] for m in model_data]
+
+        # --- Aggregate predictions using a weighted vote ---
+        # Sum the confidence scores for each prediction label.
+        vote_totals = defaultdict(float)
+        for pred, conf in zip(preds, confs):
+            vote_totals[pred] += conf
+
+        # Choose the label with the highest total confidence.
+        agg_pred = max(vote_totals, key=vote_totals.get)
+
+        # Compute the aggregate confidence as the average confidence
+        # of the models that predicted the chosen label.
+        relevant_confs = [conf for pred, conf in zip(preds, confs) if pred == agg_pred]
+        agg_conf = sum(relevant_confs) / len(relevant_confs) if relevant_confs else 0
+
+        # Format the aggregate confidence as a percentage.
+        agg_conf_pct = f"{agg_conf * 100:.0f}%"
+
+        # --- Append the rows for this image ---
+        csv_rows.append(["Path:"] + [path] * len(model_data) + [path])
+        csv_rows.append(["Prediction:"] + preds + [agg_pred])
+        csv_rows.append(
+            ["Confidence:"] + [f"{conf * 100:.0f}%" for conf in confs] + [agg_conf_pct]
         )
 
-        # Prediction row
-        preds = [m["predictions"][i]["prediction"] for m in model_data]
-
-        # Confidence row (as percentages)
-        confidences = [
-            f"{m['predictions'][i]['confidence'] * 100:.0f}%" for m in model_data
-        ]
-
-        # Add the rows
-        csv_rows.append(["Path:"] + path)
-        csv_rows.append(["Prediction:"] + preds)
-        csv_rows.append(["Confidence:"] + confidences)
-
-    # Write to CSV
     with open(out, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerows(csv_rows)
