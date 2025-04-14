@@ -1,7 +1,8 @@
 import argparse
 from sim_data import defaultDataset
 from process.transformer import TransformerModelONNX
-from process.bnext_m import BNextModelONNX
+from process.bnext_M import BNext_M_ModelONNX
+from process.bnext_S import BNext_S_ModelONNX
 import os
 import json
 import pandas as pd
@@ -20,7 +21,7 @@ def args_func():
         type=str,
         nargs="+",  # Accepts one or more model names as a list
         required=True,
-        help="List of models to use (e.g., TransformerModel BNextModelONNX). Use 'all' to run all models or 'list' to list available models.",
+        help="List of models to use (e.g., TransformerModel BNext_M_ModelONNX). Use 'all' to run all models or 'list' to list available models.",
     )
 
     args = parser.parse_args()
@@ -73,7 +74,8 @@ def run_models(models, dataset):
 
 if __name__ == "__main__":
     available_models = {
-        cls.__name__: cls for cls in [BNextModelONNX, TransformerModelONNX]
+        cls.__name__: cls
+        for cls in [BNext_M_ModelONNX, BNext_S_ModelONNX, TransformerModelONNX]
     }
     input_path = "sample_input"
 

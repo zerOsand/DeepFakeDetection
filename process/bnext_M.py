@@ -5,11 +5,8 @@ import onnxruntime as ort
 import numpy as np
 
 
-# Trained on Diverse Fake Face Dataset
-class BNext_M_ModelONNX:
-    def __init__(
-        self, model_path="onnx_models/bnext_M_dffd_model.onnx", resolution=224
-    ):
+class BNextModelONNX:
+    def __init__(self, model_path="onnx_models/bnext_model.onnx", resolution=224):
         self.session = ort.InferenceSession(
             model_path,
             providers=["CUDAExecutionProvider", "CPUExecutionProvider"],
@@ -45,4 +42,5 @@ class BNext_M_ModelONNX:
 
     def predict(self, input):
         output = self.session.run(None, {"input": input})
+        print(output)
         return output[0]
