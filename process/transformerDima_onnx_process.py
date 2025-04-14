@@ -72,19 +72,23 @@ class TransformerModelDimaONNX:
         exp_scores = np.exp(prediction_result[0])  # Exponentiate the scores
         probabilities = exp_scores / np.sum(
             exp_scores
-        )  # Normalize by dividing by the sum of exponentiated scores
-        # print("Probabilities:", probabilities)
-        # Format the prediction result
-        prediction = {
-            "prediction": "real" if probabilities[0] > probabilities[1] else "fake",
-            "confidence": float(
-                max(probabilities)
-            ),  # Convert to float for better readability
-        }
+        )  
+        # Normalize by dividing by the sum of exponentiated scores
+        
+        confidence = float(max(probabilities))
+        raw_label = "real" if probabilities[0] > probabilities[1] else "fake"
+        strength = (
+            "likely"
+            if confidence < 0.2 or confidence > 0.8
+            else "weakly" if confidence < 0.4 or confidence > 0.6 else "uncertain"
+        )
 
-        # Print the formatted prediction
-        # print("Formatted prediction:", prediction)
+        if strength == "uncertain":
+            label = "uncertain"
+        else:
+            label = f"{strength} {raw_label}"
 
+        prediction = {"prediction": label, "confidence": confidence}
         # Return the processed result
         return prediction
 
