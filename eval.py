@@ -74,7 +74,8 @@ def run_models(models, dataset):
 
 if __name__ == "__main__":
     available_models = {
-        cls.__name__: cls for cls in [BNext_M_ModelONNX, BNext_S_ModelONNX, TransformerModelONNX]
+        cls.__name__: cls
+        for cls in [BNext_M_ModelONNX, BNext_S_ModelONNX, TransformerModelONNX]
     }
     input_path = "sample_input"
 

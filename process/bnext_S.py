@@ -4,9 +4,12 @@ import torch
 import onnxruntime as ort
 import numpy as np
 
+
 # Trained on COCOFake dataset
 class BNext_S_ModelONNX:
-    def __init__(self, model_path="onnx_models/bnext_S_coco_model.onnx", resolution=224):
+    def __init__(
+        self, model_path="onnx_models/bnext_S_coco_model.onnx", resolution=224
+    ):
         self.session = ort.InferenceSession(
             model_path,
             providers=["CUDAExecutionProvider", "CPUExecutionProvider"],
