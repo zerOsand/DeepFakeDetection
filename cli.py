@@ -1,7 +1,7 @@
 import argparse
 from sim_data import defaultDataset
 from process.transformer import TransformerModelONNX
-from process.bnext import BNextModelONNX
+from process.bnext_m import BNextModelONNX
 import os
 import json
 import pandas as pd
