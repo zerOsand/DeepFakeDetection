@@ -27,14 +27,6 @@ def args_func():
     args = parser.parse_args()
     return args
 
-
-# def get_area_ratio(img1, img2):
-#     print(img1, img2)
-#     h1, w1 = img1
-#     h2, w2 = img2
-#     return (h1 * w1) / (h2 * w2)
-
-
 # Inputs: models (list of model objects), dataset (dataset object)
 # Outputs: results (a list of lists of dictionaries, one for each model)
 def run_models(models, dataset):

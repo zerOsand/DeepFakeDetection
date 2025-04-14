@@ -13,8 +13,8 @@ from flask_ml.flask_ml_server.models import (
     ResponseBody,
     TaskSchema,
 )
-from process.bnext_m import BNext_M_ModelONNX
-from process.bnext_s import BNext_S_ModelONNX
+from process.bnext_M import BNext_M_ModelONNX
+from process.bnext_S import BNext_S_ModelONNX
 from process.transformer import TransformerModelONNX
 from random import randint
 import os

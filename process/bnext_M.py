@@ -5,8 +5,11 @@ import onnxruntime as ort
 import numpy as np
 
 
-class BNextModelONNX:
-    def __init__(self, model_path="onnx_models/bnext_model.onnx", resolution=224):
+# Trained on COCOFake dataset
+class BNext_S_ModelONNX:
+    def __init__(
+        self, model_path="onnx_models/bnext_M_dffd_model.onnx", resolution=224
+    ):
         self.session = ort.InferenceSession(
             model_path,
             providers=["CUDAExecutionProvider", "CPUExecutionProvider"],
@@ -42,5 +45,4 @@ class BNextModelONNX:
 
     def predict(self, input):
         output = self.session.run(None, {"input": input})
-        print(output)
         return output[0]
