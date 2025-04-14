@@ -3,6 +3,7 @@ from sim_data import defaultDataset
 from process.transformer import TransformerModelONNX
 from process.bnext_M import BNext_M_ModelONNX
 from process.bnext_S import BNext_S_ModelONNX
+from process.transformerDima_onnx_process import TransformerModelDimaONNX
 import os
 import json
 import pandas as pd
@@ -27,6 +28,7 @@ def args_func():
     args = parser.parse_args()
     return args
 
+
 # Inputs: models (list of model objects), dataset (dataset object)
 # Outputs: results (a list of lists of dictionaries, one for each model)
 def run_models(models, dataset):
@@ -39,7 +41,7 @@ def run_models(models, dataset):
             len(dataset)
         ):  # This is done one image at a time to avoid memory issues
             sample = dataset[i]
-            print(sample)
+            # print(sample)
             image = sample["image"]
             image_path = sample["image_path"]
             original_res = sample["original_res"]
@@ -67,7 +69,12 @@ def run_models(models, dataset):
 if __name__ == "__main__":
     available_models = {
         cls.__name__: cls
-        for cls in [BNext_M_ModelONNX, BNext_S_ModelONNX, TransformerModelONNX]
+        for cls in [
+            BNext_M_ModelONNX,
+            BNext_S_ModelONNX,
+            TransformerModelONNX,
+            TransformerModelDimaONNX,
+        ]
     }
     input_path = "sample_input"
 
@@ -115,6 +122,9 @@ if __name__ == "__main__":
 
     results = run_models(models_to_use, test_dataset)
 
+    os.makedirs(
+        "sample_output", exist_ok=True
+    )  # Create the directory if it doesn't exist
     with open("sample_output/out.json", "w") as f:
         json.dump(results, f, indent=4)
 
