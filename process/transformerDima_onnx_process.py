@@ -4,13 +4,14 @@ import numpy as np
 
 
 class TransformerModelDimaONNX:
-    def __init__(self, model_path='onnx_models/dima_transformer.onnx', resolution=224):
+    def __init__(self, model_path="onnx_models/dima_transformer.onnx", resolution=224):
         self.session = ort.InferenceSession(
             model_path,
             providers=["CUDAExecutionProvider", "CPUExecutionProvider"],
         )
         self.resolution = resolution
         self.valid_extensions = (".jpg", ".jpeg", ".png")
+
     #     self.inspect_model_inputs()  # Inspect model inputs during initialization
 
     # def inspect_model_inputs(self):
@@ -27,14 +28,20 @@ class TransformerModelDimaONNX:
         # Normalize the image
         image = image / 255.0
         # Reorder dimensions to (channels, height, width)
-        image = np.transpose(image, (2, 0, 1))  # Convert from (height, width, channels) to (channels, height, width)
+        image = np.transpose(
+            image, (2, 0, 1)
+        )  # Convert from (height, width, channels) to (channels, height, width)
         # Add a batch dimension
-        image = np.expand_dims(image, axis=0)  # Shape becomes (batch_size, channels, height, width)
+        image = np.expand_dims(
+            image, axis=0
+        )  # Shape becomes (batch_size, channels, height, width)
         return image
 
     def predict(self, image):
         # Get the prediction using the correct input key
-        results = self.session.run(None, {"pixel_values": image})  # Use "pixel_values" as the input key
+        results = self.session.run(
+            None, {"pixel_values": image}
+        )  # Use "pixel_values" as the input key
         # Return the results
         return results[0]
 
@@ -59,20 +66,24 @@ class TransformerModelDimaONNX:
         # -- If we notice that later a score below 50% is classified as the 'prediction'
         #   replace the below code with this:
         # prediction = prediction_result[0] if max(prediction_result[0]['score'], prediction_result[1]['score']) else prediction_result[1]
-        #print("--" * 20)
-        #print("Prediction result:", prediction_result)
+        # print("--" * 20)
+        # print("Prediction result:", prediction_result)
         # Apply softmax to normalize the prediction result
         exp_scores = np.exp(prediction_result[0])  # Exponentiate the scores
-        probabilities = exp_scores / np.sum(exp_scores)  # Normalize by dividing by the sum of exponentiated scores
-        #print("Probabilities:", probabilities)
+        probabilities = exp_scores / np.sum(
+            exp_scores
+        )  # Normalize by dividing by the sum of exponentiated scores
+        # print("Probabilities:", probabilities)
         # Format the prediction result
         prediction = {
             "prediction": "real" if probabilities[0] > probabilities[1] else "fake",
-            "confidence": float(max(probabilities)),  # Convert to float for better readability
+            "confidence": float(
+                max(probabilities)
+            ),  # Convert to float for better readability
         }
 
         # Print the formatted prediction
-        #print("Formatted prediction:", prediction)
+        # print("Formatted prediction:", prediction)
 
         # Return the processed result
         return prediction
