@@ -13,7 +13,7 @@ from flask_ml.flask_ml_server.models import (
     ResponseBody,
     TaskSchema,
 )
-from process.bnext import BNextModelONNX
+from process.bnext_m import BNextModelONNX
 from process.transformer import TransformerModelONNX
 from random import randint
 import os
@@ -103,9 +103,7 @@ def give_prediction(inputs: Inputs, parameters: Parameters) -> ResponseBody:
 
     dataset = defaultDataset(dataset_path=input_path, resolution=224)
 
-    # print(parameters)
     res_list = run_models(models, dataset)
-    # print(res_list)
     # Prepare model data structure
     model_data = []
     for model_results in res_list:
