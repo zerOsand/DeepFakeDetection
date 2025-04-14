@@ -16,6 +16,7 @@ from flask_ml.flask_ml_server.models import (
 from process.bnext_M import BNext_M_ModelONNX
 from process.bnext_S import BNext_S_ModelONNX
 from process.transformer import TransformerModelONNX
+from process.transformerDima_onnx_process import TransformerModelDimaONNX
 from random import randint
 import os
 from sim_data import defaultDataset
@@ -58,7 +59,7 @@ server.add_app_metadata(
     info=load_file_as_string("img-app-info.md"),
 )
 
-models = [BNext_M_ModelONNX(), BNext_S_ModelONNX(), TransformerModelONNX()]
+models = [BNext_M_ModelONNX(), BNext_S_ModelONNX(), TransformerModelONNX(), TransformerModelDimaONNX()]
 
 
 def run_models(models, dataset):
@@ -66,6 +67,7 @@ def run_models(models, dataset):
     for model in models:
         model_results = []
         model_results.append({"model_name": model.__class__.__name__})
+        # print("Name:", model.__class__.__name__)
         for i in range(
             len(dataset)
         ):  # This is done one image at a time to avoid memory issues
