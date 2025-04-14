@@ -35,10 +35,25 @@ class BNext_S_ModelONNX:
     def preprocess(self, image):
         return self.apply_transforms(image)
 
-    def decode_prediction(self, prediction):
-        conf = prediction if prediction > 0.5 else 1 - prediction
-        pred = "real" if prediction > 0.8 else "fake" if conf > 0.8 else "uncertain"
-        return {"prediction": pred, "confidence": conf.item()}
+    def decode_prediction(self, confidence):
+
+        confidence = confidence.item()
+
+        label = (
+            "likely fake"
+            if confidence < 0.2
+            else (
+                "weakly fake"
+                if confidence < 0.4
+                else (
+                    "uncertain"
+                    if confidence < 0.6
+                    else "weakly real" if confidence < 0.8 else "likely real"
+                )
+            )
+        )
+
+        return {"prediction": label, "confidence": confidence}
 
     def postprocess(self, output):
         return self.decode_prediction(torch.sigmoid(torch.tensor(output[0][0].item())))
