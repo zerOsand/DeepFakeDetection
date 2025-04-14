@@ -6,7 +6,7 @@ import numpy as np
 
 
 # Trained on COCOFake dataset
-class BNext_S_ModelONNX:
+class BNext_M_ModelONNX:
     def __init__(
         self, model_path="onnx_models/bnext_M_dffd_model.onnx", resolution=224
     ):
