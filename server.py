@@ -64,7 +64,7 @@ models = [
     BNext_M_ModelONNX(),
     BNext_S_ModelONNX(),
     TransformerModelONNX(),
-    TransformerModelDimaONNX(), 
+    TransformerModelDimaONNX(),
 ]
 
 

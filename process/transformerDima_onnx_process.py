@@ -70,11 +70,9 @@ class TransformerModelDimaONNX:
         # print("Prediction result:", prediction_result)
         # Apply softmax to normalize the prediction result
         exp_scores = np.exp(prediction_result[0])  # Exponentiate the scores
-        probabilities = exp_scores / np.sum(
-            exp_scores
-        )  
+        probabilities = exp_scores / np.sum(exp_scores)
         # Normalize by dividing by the sum of exponentiated scores
-        
+
         confidence = float(max(probabilities))
         raw_label = "real" if probabilities[0] > probabilities[1] else "fake"
         strength = (

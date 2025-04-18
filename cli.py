@@ -22,7 +22,7 @@ def args_func():
         type=str,
         nargs="+",  # Accepts one or more model names as a list
         required=True,
-        help="List of models to use (e.g., TransformerModel BNext_M_ModelONNX). Use 'all' to run all models or 'list' to list available models.",
+        help="List of models to use (e.g., TransformerModel BNext_M_ModelONNX. Use 'all' to run all models or 'list' to list available models.",
     )
 
     args = parser.parse_args()
