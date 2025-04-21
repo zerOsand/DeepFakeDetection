@@ -1,6 +1,7 @@
 from PIL import Image
 import onnxruntime as ort
 import numpy as np
+from pathlib import Path
 
 
 # Trained on COCOFake dataset
@@ -8,8 +9,10 @@ class BNext_S_ModelONNX:
     def __init__(
         self, model_path="onnx_models/bnext_S_coco_model.onnx", resolution=224
     ):
+        # Convert model_path to a Path object
+        self.model_path = Path(model_path)
         self.session = ort.InferenceSession(
-            model_path,
+            str(self.model_path),  # Convert Path object to string for onnxruntime
         )
         self.resolution = resolution
         self.valid_extensions = (".jpg", ".jpeg", ".png")

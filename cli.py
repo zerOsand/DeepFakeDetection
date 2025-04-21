@@ -4,7 +4,7 @@ from process.transformer import TransformerModelONNX
 from process.bnext_M import BNext_M_ModelONNX
 from process.bnext_S import BNext_S_ModelONNX
 from process.transformerDima_onnx_process import TransformerModelDimaONNX
-import os
+from pathlib import Path
 import json
 import pandas as pd
 
@@ -76,13 +76,13 @@ if __name__ == "__main__":
             TransformerModelDimaONNX,
         ]
     }
-    input_path = "sample_input"
+    input_path = Path("sample_input")
 
     args = args_func()
     if args.dataset_path:
-        input_path = args.dataset_path
+        input_path = Path(args.dataset_path)
     # Check if the input is a valid path
-    if not os.path.exists(input_path):
+    if not input_path.exists():
         raise ValueError(f"Invalid path: {input_path}")
 
     models_to_use = []
@@ -118,16 +118,15 @@ if __name__ == "__main__":
             print("Exiting...")
             exit()
 
-    test_dataset = defaultDataset(dataset_path=input_path, resolution=224)
+    test_dataset = defaultDataset(dataset_path=str(input_path), resolution=224)
 
     results = run_models(models_to_use, test_dataset)
 
-    os.makedirs(
-        "sample_output", exist_ok=True
-    )  # Create the directory if it doesn't exist
-    with open("sample_output/out.json", "w") as f:
+    output_dir = Path("sample_output")
+    output_dir.mkdir(exist_ok=True)  # Create the directory if it doesn't exist
+    with open(output_dir / "out.json", "w") as f:
         json.dump(results, f, indent=4)
 
     flattened_results = [item for model_results in results for item in model_results]
     o = pd.DataFrame(flattened_results)  # Convert to a pandas DataFrame
-    o.to_csv("sample_output/out.csv", index=False)  # Save as a CSV file
+    o.to_csv(output_dir / "out.csv", index=False)  # Save as a CSV file
