@@ -1,6 +1,15 @@
 from PIL import Image
 import onnxruntime as ort
 import numpy as np
+from pathlib import Path
+from process.utils import (
+    Compose,
+    InterpolationMode,
+    Resize,
+    CenterCrop,
+    ToImage,
+    ToDtype,
+)
 
 
 # Trained on COCOFake dataset
@@ -8,26 +17,29 @@ class BNext_M_ModelONNX:
     def __init__(
         self, model_path="onnx_models/bnext_M_dffd_model.onnx", resolution=224
     ):
+        # Convert model_path to a Path object
+        self.model_path = Path(model_path)
         self.session = ort.InferenceSession(
-            model_path,
+            str(self.model_path),  # Convert Path object to string for onnxruntime
         )
         self.resolution = resolution
         self.valid_extensions = (".jpg", ".jpeg", ".png")
 
-    def apply_transforms(self, image):
-        size = self.resolution + self.resolution // 8
-        image = image.resize((size, size), resample=Image.BILINEAR)
-        left = (size - self.resolution) // 2
-        top = (size - self.resolution) // 2
-        right = left + self.resolution
-        bottom = top + self.resolution
-        image = image.crop((left, top, right, bottom))
-        arr = np.array(image).astype(np.float32) / 255.0
-        if arr.ndim == 2:  # grayscale => add channel dimension
-            arr = np.expand_dims(arr, axis=-1)
-        arr = np.transpose(arr, (2, 0, 1))
-
-        return arr[None, ...]
+    def apply_transforms(self, image: Image.Image) -> np.ndarray:
+        transform = Compose(
+            [
+                Resize(
+                    self.resolution + self.resolution // 8,
+                    interpolation=InterpolationMode.BILINEAR,
+                ),
+                CenterCrop(self.resolution),
+                ToImage(),
+                ToDtype(np.float32, scale=True),
+            ]
+        )
+        out = transform(image)  # H×W×C float32 in [0,1]
+        out = out.transpose(2, 0, 1)
+        return out[None, ...]  # add batch dim
 
     def preprocess(self, image):
         return self.apply_transforms(image)
