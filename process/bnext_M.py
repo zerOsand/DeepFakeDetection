@@ -2,7 +2,15 @@ from PIL import Image
 import onnxruntime as ort
 import numpy as np
 from pathlib import Path
-from process.utils import Compose, InterpolationMode, Resize, CenterCrop, ToImage, ToDtype
+from process.utils import (
+    Compose,
+    InterpolationMode,
+    Resize,
+    CenterCrop,
+    ToImage,
+    ToDtype,
+)
+
 
 # Trained on COCOFake dataset
 class BNext_M_ModelONNX:
@@ -18,15 +26,20 @@ class BNext_M_ModelONNX:
         self.valid_extensions = (".jpg", ".jpeg", ".png")
 
     def apply_transforms(self, image: Image.Image) -> np.ndarray:
-        transform = Compose([
-            Resize(self.resolution + self.resolution // 8, interpolation=InterpolationMode.BILINEAR),
-            CenterCrop(self.resolution),
-            ToImage(),
-            ToDtype(np.float32, scale=True),
-        ])
-        out = transform(image)           # H×W×C float32 in [0,1]
+        transform = Compose(
+            [
+                Resize(
+                    self.resolution + self.resolution // 8,
+                    interpolation=InterpolationMode.BILINEAR,
+                ),
+                CenterCrop(self.resolution),
+                ToImage(),
+                ToDtype(np.float32, scale=True),
+            ]
+        )
+        out = transform(image)  # H×W×C float32 in [0,1]
         out = out.transpose(2, 0, 1)
-        return out[None, ...]           # add batch dim
+        return out[None, ...]  # add batch dim
 
     def preprocess(self, image):
         return self.apply_transforms(image)

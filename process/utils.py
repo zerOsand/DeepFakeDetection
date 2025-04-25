@@ -2,6 +2,7 @@ from typing import Callable, Sequence, Any
 from PIL import Image
 import numpy as np
 
+
 class Compose:
     def __init__(self, transforms: Sequence[Callable[[Any], Any]]):
         self.transforms = transforms
@@ -12,8 +13,10 @@ class Compose:
             img = t(img)
         return img
 
+
 class InterpolationMode:
     BILINEAR = Image.BILINEAR
+
 
 class Resize:
     def __init__(self, size: int, *, interpolation=InterpolationMode.BILINEAR):
@@ -32,6 +35,7 @@ class Resize:
             new_w = int(w * (self.size / h))
         return img.resize((new_w, new_h), self.interpolation)
 
+
 class CenterCrop:
     def __init__(self, size: int):
         self.size = size  # we assume a square crop
@@ -40,8 +44,9 @@ class CenterCrop:
         w, h = img.size
         new_w, new_h = self.size, self.size
         left = (w - new_w) // 2
-        top  = (h - new_h) // 2
+        top = (h - new_h) // 2
         return img.crop((left, top, left + new_w, top + new_h))
+
 
 class ToImage:
     def __call__(self, img: Any) -> np.ndarray:
@@ -51,6 +56,7 @@ class ToImage:
         # else assume PIL.Image
         return np.array(img, copy=False)
 
+
 class ToDtype:
     def __init__(self, dtype: type, *, scale: bool = False):
         # dtype should be a NumPy dtype, e.g. np.float32
@@ -58,7 +64,7 @@ class ToDtype:
         self.scale = scale
 
     def __call__(self, arr: np.ndarray) -> np.ndarray:
-        orig_dtype = arr.dtype               # ← capture this first
+        orig_dtype = arr.dtype  # ← capture this first
         # cast (no copy if we don't need one)
         arr = arr.astype(self.dtype, copy=False)
         # if we asked to scale *and* we started from ints, divide by the max
