@@ -17,6 +17,7 @@ from process.bnext_M import BNext_M_ModelONNX
 from process.bnext_S import BNext_S_ModelONNX
 from process.transformer import TransformerModelONNX
 from process.transformerDima_onnx_process import TransformerModelDimaONNX
+from process.resnet50 import Resnet50ModelONNX
 from random import randint
 import os
 from sim_data import defaultDataset
@@ -65,6 +66,7 @@ models = [
     BNext_S_ModelONNX(),
     TransformerModelONNX(),
     TransformerModelDimaONNX(),
+    Resnet50ModelONNX(),
 ]
 
 
