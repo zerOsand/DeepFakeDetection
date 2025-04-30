@@ -25,6 +25,7 @@ class Resnet50ModelONNX:
         )
         self.resolution = resolution
         self.valid_extensions = (".jpg", ".jpeg", ".png")
+        print("Initialized Resnet50ModelONNX")
 
     def apply_transforms(self, image: Image.Image) -> np.ndarray:
         transform = Compose(

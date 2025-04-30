@@ -24,6 +24,7 @@ class BNext_M_ModelONNX:
         )
         self.resolution = resolution
         self.valid_extensions = (".jpg", ".jpeg", ".png")
+        print("Initialized BNext_M_ModelONNX")
 
     def apply_transforms(self, image: Image.Image) -> np.ndarray:
         transform = Compose(
@@ -39,6 +40,7 @@ class BNext_M_ModelONNX:
         )
         out = transform(image)  # H×W×C float32 in [0,1]
         out = out.transpose(2, 0, 1)
+
         return out[None, ...]  # add batch dim
 
     def preprocess(self, image):
