@@ -2,6 +2,7 @@ from pathlib import Path
 from PIL import Image
 import onnxruntime as ort
 import numpy as np
+import process.facedetector as facedetector # Ensure this import exists or add it
 
 
 class TransformerModelONNX:
@@ -41,11 +42,62 @@ class TransformerModelONNX:
         # print(results)
         return results[0]
 
-    def preprocess(self, image):
-        # We don't preprocess anything for this model
-        # Resize the image to the required resolution
-        image = self.apply_transforms(image)
-        return image
+    def preprocess(self, image, facecrop=None):
+        if facecrop:
+            self.resolution_ratio = 1.5  # Default value if not set
+            # Assuming faceDetector returns (center_x, center_y) or None
+            # The faceDetector might need a specific input format (e.g., numpy array)
+            face_center_coords = None
+            try:
+                # Convert PIL Image to numpy array (RGB)
+                np_image = np.array(image.convert('RGB'))
+
+                # Assuming faceDetector takes a numpy array and the ONNX session
+                face_center_coords = facedetector.faceDetector(np_image, face_detector=facecrop)[3]
+            except Exception as e:
+                # Handle potential errors during face detection
+                print(f"Warning: Face detection failed with error: {e}. Proceeding without cropping.")
+
+
+            if face_center_coords is not None:
+                # Define the ratio for cropping relative to the base resolution.
+                if not hasattr(self, 'resolution_ratio'):
+                    print("Warning: self.resolution_ratio not set. Defaulting to 1.0.")
+                    self.resolution_ratio = 1.0 # Default value if not set
+
+                center_x, center_y = face_center_coords
+                img_width, img_height = image.size
+                # Desired crop size based on resolution and ratio, centered around the face
+                crop_half_size = int(self.resolution * self.resolution_ratio / 2) # Half the desired dimension
+
+                # Calculate initial crop box coordinates
+                left = center_x - crop_half_size
+                top = center_y - crop_half_size
+                right = center_x + crop_half_size
+                bottom = center_y + crop_half_size
+
+                # Clamp coordinates to be within image boundaries
+                left = max(0, left)
+                top = max(0, top)
+                right = min(img_width, right)
+                bottom = min(img_height, bottom)
+
+                # Ensure coordinates are integers for PIL crop
+                left, top, right, bottom = int(left), int(top), int(right), int(bottom)
+
+                # Check if the calculated box has valid dimensions (width > 0 and height > 0)
+                if right > left and bottom > top:
+                    # Crop the original PIL image
+                    image = image.crop((left, top, right, bottom))
+                    # Optional: Save the cropped image for debugging
+                    # Path("temp").mkdir(exist_ok=True) # Ensure temp directory exists
+                    # image.save(f"temp/cropped_{center_x}_{center_y}.jpg")
+                else:
+                    # Optional: Log or print a warning if the crop box is invalid
+                    print(f"Warning: Invalid crop box calculated ({left}, {top}, {right}, {bottom}) for face at ({center_x}, {center_y}). Using original image.")
+
+        # Apply standard transforms to the (potentially cropped) image
+        return self.apply_transforms(image)
 
     def preprocess_images(self, images):
         # We don't preprocess anything for this model
