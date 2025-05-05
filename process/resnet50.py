@@ -9,13 +9,14 @@ from process.utils import (
     CenterCrop,
     ToImage,
     ToDtype,
+    Normalize,
 )
 
 
 # Trained on COCOFake dataset
-class BNext_S_ModelONNX:
+class Resnet50ModelONNX:
     def __init__(
-        self, model_path="onnx_models/bnext_S_coco_model.onnx", resolution=224
+        self, model_path="onnx_models/resnet50_fakes.onnx", resolution=224
     ):
         # Convert model_path to a Path object
         self.model_path = Path(model_path)
@@ -24,51 +25,46 @@ class BNext_S_ModelONNX:
         )
         self.resolution = resolution
         self.valid_extensions = (".jpg", ".jpeg", ".png")
-        print("Initialized BNext_S_ModelONNX")
+        print("Initialized Resnet50ModelONNX")
 
     def apply_transforms(self, image: Image.Image) -> np.ndarray:
         transform = Compose(
             [
-                Resize(
-                    self.resolution + self.resolution // 8,
-                    interpolation=InterpolationMode.BILINEAR,
-                ),
+                # Resize(
+                #     self.resolution + self.resolution // 8,
+                #     interpolation=InterpolationMode.BILINEAR,
+                # ),
                 CenterCrop(self.resolution),
                 ToImage(),
                 ToDtype(np.float32, scale=True),
+                Normalize(mean=[0.485, 0.456, 0.406],
+                      std=[0.229, 0.224, 0.225]),
             ]
         )
-        out = transform(image)  # H×W×C float32 in [0,1]
+        out = transform(image)
         out = out.transpose(2, 0, 1)
-
-        return out[None, ...]  # add batch dim
-
+        return out[None, ...] 
+    
     def preprocess(self, image):
         return self.apply_transforms(image)
 
     def decode_prediction(self, confidence):
-
         confidence = confidence.item()
-
-        label = (
-            "likely fake"
-            if confidence < 0.2
-            else (
-                "weakly fake"
-                if confidence < 0.4
-                else (
-                    "uncertain"
-                    if confidence < 0.6
-                    else "weakly real" if confidence < 0.8 else "likely real"
-                )
-            )
-        )
-
+        if confidence < 0.2:
+            label = "likely fake"
+        elif confidence < 0.4:
+            label = "weakly fake"
+        elif confidence < 0.6:
+            label = "uncertain"
+        elif confidence < 0.8:
+            label = "weakly real"
+        else:
+            label = "likely real"
         return {"prediction": label, "confidence": confidence}
+
 
     def postprocess(self, output):
         logit = float(output[0][0])
-        # numpy sigmoid
         prob = 1.0 / (1.0 + np.exp(-logit))
         return self.decode_prediction(prob)
 
