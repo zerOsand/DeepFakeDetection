@@ -20,17 +20,22 @@ def faceDetector(orig_image, threshold=0.7, face_detector=None):
     boxes, labels, probs = predict_face(
         orig_image.shape[1], orig_image.shape[0], confidences, boxes, threshold
     )
-
+    already_headshot = False
     center = None
     if boxes.size > 0:
-        first_box = boxes[0]
-        # Calculate center coordinates (x, y) for the first box
-        center_x = (first_box[0] + first_box[2]) // 2
-        center_y = (first_box[1] + first_box[3]) // 2
+        # Find the largest box based on area (width * height)
+        largest_box = max(boxes, key=lambda box: (box[2] - box[0]) * (box[3] - box[1]))
+        # Calculate center coordinates (x, y) for the largest box
+        center_x = (largest_box[0] + largest_box[2]) // 2
+        center_y = (largest_box[1] + largest_box[3]) // 2
         center = (center_x, center_y)
 
+        #Check if the box is more than 50% of the image
+        if (largest_box[2] - largest_box[0]) * (largest_box[3] - largest_box[1]) > 0.5 * (orig_image.shape[1] * orig_image.shape[0]):
+            already_headshot = True
 
-    return boxes, labels, probs, center
+
+    return boxes, labels, probs, center, already_headshot
 
 def area_of(left_top, right_bottom):
     """

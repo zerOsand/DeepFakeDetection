@@ -52,12 +52,17 @@ class BNext_M_ModelONNX:
                 # Convert PIL Image to numpy array (RGB)
                 np_image = np.array(image.convert('RGB'))
 
-                # Assuming faceDetector takes a numpy array and the ONNX session
-                face_center_coords = facedetector.faceDetector(np_image, face_detector=facecrop)[3]
+                detectorResults = facedetector.faceDetector(np_image, face_detector=facecrop)
+
+                face_center_coords = detectorResults[3]  # Get the center coordinates of the detected face
+                already_headshot = detectorResults[4]  # Check if the image is already a headshot
             except Exception as e:
                 # Handle potential errors during face detection
                 print(f"Warning: Face detection failed with error: {e}. Proceeding without cropping.")
 
+            if already_headshot:
+                #print("Image is already a headshot. No cropping needed.")
+                return self.apply_transforms(image)
 
             if face_center_coords is not None:
                 # Define the ratio for cropping relative to the base resolution.
